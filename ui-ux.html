@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>旅行攻略小程序原型</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 配置Tailwind自定义颜色 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1677ff',
+            secondary: '#52c41a',
+            warning: '#faad14',
+            danger: '#f5222d',
+            gray: {
+              100: '#f5f5f5',
+              200: '#e5e5e5',
+              300: '#d4d4d4',
+              400: '#a3a3a3',
+              500: '#737373',
+              600: '#525252',
+              700: '#404040',
+              800: '#262626',
+              900: '#171717',
+            }
+          },
+          fontFamily: {
+            sans: ['PingFang SC', 'Helvetica Neue', 'Arial', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .wx-shadow {
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      }
+      .card-hover {
+        transition: transform 0.3s ease;
+      }
+      .card-hover:active {
+        transform: scale(0.98);
+      }
+      .page-transition {
+        transition: opacity 0.3s ease;
+      }
+    }
+  </style>
+  <style>
+    /* 基础样式 */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f5f5f5;
+    }
+    /* 模拟微信小程序样式 */
+    .wx-page {
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      padding-bottom: 70px;
+    }
+    .wx-header {
+      background-color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .wx-tabbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #fff;
+      z-index: 100;
+      border-top: 1px solid #e5e5e5;
+    }
+    /* 动画效果 */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease;
+    }
+    .animate-slide-in-up {
+      animation: slideInUp 0.3s ease;
+    }
+    /* 加载动画 */
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #1677ff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="font-sans text-gray-800">
+  <!-- 页面容器 -->
+  <div class="wx-page">
+    <!-- 首页 -->
+    <div id="home-page" class="page-transition animate-fade-in">
+      <!-- 头部搜索区域 -->
+      <div class="wx-header p-4 flex items-center justify-between">
+        <h1 class="text-xl font-bold text-primary">旅行攻略</h1>
+        <div class="flex space-x-3">
+          <button class="text-gray-600">
+            <i class="fa fa-bell-o text-lg"></i>
+          </button>
+          <button class="text-gray-600">
+            <i class="fa fa-user-o text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 搜索框 -->
+      <div class="p-4">
+        <div class="relative">
+          <input type="text" placeholder="想去哪里？输入目的地、日期、兴趣偏好" 
+                 class="w-full bg-gray-100 rounded-full py-3 px-10 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/30">
+          <i class="fa fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+      </div>
+      
+      <!-- 热门目的地 -->
+      <div class="p-4">
+        <h2 class="text-lg font-bold mb-3">热门目的地</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="relative rounded-lg overflow-hidden h-32 card-hover">
+            <div class="w-full h-full bg-red-50 flex items-center justify-center text-red-500">
+              <i class="fa fa-building text-4xl"></i>
+              <span class="ml-2 text-xl font-bold text-black">北京</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+              <h3 class="text-white font-bold">北京</h3>
+              <p class="text-white/80 text-xs">2,341 条攻略</p>
+            </div>
+          </div>
+          <div class="relative rounded-lg overflow-hidden h-32 card-hover">
+            <div class="w-full h-full bg-blue-50 flex items-center justify-center text-blue-500">
+              <i class="fa fa-building text-4xl"></i>
+              <span class="ml-2 text-xl font-bold text-black">上海</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+              <h3 class="text-white font-bold">上海</h3>
+              <p class="text-white/80 text-xs">1,892 条攻略</p>
+            </div>
+          </div>
+          <div class="relative rounded-lg overflow-hidden h-32 card-hover">
+            <div class="w-full h-full bg-green-50 flex items-center justify-center text-green-500">
+              <i class="fa fa-building text-4xl"></i>
+              <span class="ml-2 text-xl font-bold text-black">成都</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+              <h3 class="text-white font-bold">成都</h3>
+              <p class="text-white/80 text-xs">1,567 条攻略</p>
+            </div>
+          </div>
+          <div class="relative rounded-lg overflow-hidden h-32 card-hover">
+            <div class="w-full h-full bg-yellow-50 flex items-center justify-center text-yellow-500">
+              <i class="fa fa-building text-4xl"></i>
+              <span class="ml-2 text-xl font-bold text-black">西安</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+              <h3 class="text-white font-bold">西安</h3>
+              <p class="text-white/80 text-xs">1,245 条攻略</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 精选攻略 -->
+      <div class="p-4">
+        <h2 class="text-lg font-bold mb-3">精选攻略</h2>
+        <div class="space-y-3">
+          <div class="bg-white rounded-lg overflow-hidden wx-shadow card-hover">
+            <div class="flex">
+              <div class="w-1/3">
+                <div class="w-full h-full bg-red-50 flex items-center justify-center text-red-500">
+                  <i class="fa fa-map-marker text-3xl"></i>
+                </div>
+              </div>
+              <div class="w-2/3 p-3">
+                <h3 class="font-bold text-sm line-clamp-2">北京三日游 - 故宫+长城+胡同深度体验</h3>
+                <div class="flex items-center mt-1">
+                  <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">3天2晚</span>
+                  <span class="text-xs text-gray-500 ml-2">适合初次游玩</span>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                  <div class="flex items-center">
+                    <i class="fa fa-star text-warning text-xs"></i>
+                    <span class="text-xs text-gray-600 ml-1">4.8</span>
+                    <span class="text-xs text-gray-400 ml-1">|</span>
+                    <span class="text-xs text-gray-400">2,341人已收藏</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-lg overflow-hidden wx-shadow card-hover">
+            <div class="flex">
+              <div class="w-1/3">
+                <div class="w-full h-full bg-green-50 flex items-center justify-center text-green-500">
+                  <i class="fa fa-cutlery text-3xl"></i>
+                </div>
+              </div>
+              <div class="w-2/3 p-3">
+                <h3 class="font-bold text-sm line-clamp-2">成都美食深度游 - 街头小吃+网红餐厅全攻略</h3>
+                <div class="flex items-center mt-1">
+                  <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">2天1晚</span>
+                  <span class="text-xs text-gray-500 ml-2">美食爱好者必看</span>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                  <div class="flex items-center">
+                    <i class="fa fa-star text-warning text-xs"></i>
+                    <span class="text-xs text-gray-600 ml-1">4.9</span>
+                    <span class="text-xs text-gray-400 ml-1">|</span>
+                    <span class="text-xs text-gray-400">1,876人已收藏</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部导航 -->
+      <div class="wx-tabbar flex justify-around py-2">
+        <button class="flex flex-col items-center text-primary">
+          <i class="fa fa-home text-lg"></i>
+          <span class="text-xs mt-1">首页</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-500">
+          <i class="fa fa-compass text-lg"></i>
+          <span class="text-xs mt-1">发现</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-500">
+          <i class="fa fa-calendar text-lg"></i>
+          <span class="text-xs mt-1">行程</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-500">
+          <i class="fa fa-user-o text-lg"></i>
+          <span class="text-xs mt-1">我的</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 攻略生成页 -->
+    <div id="generate-page" class="page-transition hidden">
+      <div class="wx-header p-4 flex items-center">
+        <button id="back-btn" class="mr-4 text-gray-600">
+          <i class="fa fa-arrow-left text-lg"></i>
+        </button>
+        <h1 class="text-xl font-bold text-primary">生成攻略</h1>
+      </div>
+      
+      <div class="p-4">
+        <!-- 需求确认卡片 -->
+        <div class="bg-white rounded-lg p-4 wx-shadow mb-4">
+          <h2 class="font-bold mb-3">旅行需求确认</h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="text-sm text-gray-500 block mb-1">目的地</label>
+              <div class="flex items-center border-b border-gray-200 pb-2">
+                <input type="text" value="北京" class="flex-1 outline-none text-sm">
+                <i class="fa fa-chevron-right text-gray-400 text-xs"></i>
+              </div>
+            </div>
+            
+            <div>
+              <label class="text-sm text-gray-500 block mb-1">日期</label>
+              <div class="flex items-center border-b border-gray-200 pb-2">
+                <input type="text" value="2023-10-01 至 2023-10-04" class="flex-1 outline-none text-sm">
+                <i class="fa fa-chevron-right text-gray-400 text-xs"></i>
+              </div>
+            </div>
+            
+            <div>
+              <label class="text-sm text-gray-500 block mb-1">兴趣偏好</label>
+              <div class="flex flex-wrap gap-2 mt-1">
+                <span class="inline-block bg-primary/10 text-primary text-xs px-3 py-1 rounded-full">历史文化</span>
+                <span class="inline-block bg-primary/10 text-primary text-xs px-3 py-1 rounded-full">美食</span>
+                <span class="inline-block bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">+ 添加</span>
+              </div>
+            </div>
+            
+            <div>
+              <label class="text-sm text-gray-500 block mb-1">同行人员</label>
+              <div class="flex items-center border-b border-gray-200 pb-2">
+                <input type="text" value="情侣" class="flex-1 outline-none text-sm">
+                <i class="fa fa-chevron-right text-gray-400 text-xs"></i>
+              </div>
+            </div>
+            
+            <div>
+              <label class="text-sm text-gray-500 block mb-1">预算</label>
+              <div class="flex items-center border-b border-gray-200 pb-2">
+                <input type="text" value="2000-3000元/人" class="flex-1 outline-none text-sm">
+                <i class="fa fa-chevron-right text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 生成进度 -->
+        <div class="bg-white rounded-lg p-4 wx-shadow mb-4">
+          <h2 class="font-bold mb-3">生成进度</h2>
+          
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">1</div>
+                <span class="ml-2 text-sm">分析旅行需求</span>
+              </div>
+              <i class="fa fa-check text-secondary"></i>
+            </div>
+            
+            <div class="flex justify-between items-center">
+              <div class="flex items-center">
+                <div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">2</div>
+                <span class="ml-2 text-sm">推荐景点和路线</span>
+              </div>
+              <div class="loading-spinner"></div>
+            </div>
+            
+            <div class="flex justify-between items-center text-gray-400">
+              <div class="flex items-center">
+                <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs">3</div>
+                <span class="ml-2 text-sm">整合天气和交通信息</span>
+              </div>
+            </div>
+            
+            <div class="flex justify-between items-center text-gray-400">
+              <div class="flex items-center">
+                <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs">4</div>
+                <span class="ml-2 text-sm">生成完整攻略</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button class="w-full bg-primary text-white py-3 rounded-full font-bold text-sm card-hover">
+          生成攻略
+        </button>
+      </div>
+    </div>
+    
+    <!-- 攻略详情页 -->
+    <div id="detail-page" class="page-transition hidden">
+      <div class="wx-header p-4 flex items-center">
+        <button class="mr-4 text-gray-600">
+          <i class="fa fa-arrow-left text-lg"></i>
+        </button>
+        <h1 class="text-xl font-bold text-primary">攻略详情</h1>
+        <div class="flex-1"></div>
+        <div class="flex space-x-4">
+          <button class="text-gray-600">
+            <i class="fa fa-share-alt text-lg"></i>
+          </button>
+          <button class="text-gray-600">
+            <i class="fa fa-heart-o text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 攻略头部信息 -->
+      <div class="relative h-40">
+        <div class="w-full h-full bg-red-50 flex items-center justify-center text-red-500">
+          <i class="fa fa-map text-5xl"></i>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+          <h2 class="text-white font-bold text-xl">北京三日游</h2>
+          <div class="flex items-center mt-1">
+            <span class="text-white/90 text-xs px-2 py-0.5 rounded-full bg-white/20">3天2晚</span>
+            <span class="text-white/90 text-xs ml-2">适合初次游玩</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 行程概览 -->
+      <div class="bg-white p-4 mt-2">
+        <h3 class="font-bold mb-3">行程概览</h3>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <i class="fa fa-calendar text-primary"></i>
+            <span class="text-sm ml-2">2023-10-01 至 2023-10-04</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fa fa-map-marker text-primary"></i>
+            <span class="text-sm ml-2">8个景点</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fa fa-money text-primary"></i>
+            <span class="text-sm ml-2">约2500元/人</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 每日行程标签 -->
+      <div class="bg-white p-4 mt-2">
+        <div class="flex border-b border-gray-200">
+          <button class="pb-2 mr-6 font-bold text-primary border-b-2 border-primary">第1天</button>
+          <button class="pb-2 mr-6 font-bold text-gray-500">第2天</button>
+          <button class="pb-2 font-bold text-gray-500">第3天</button>
+        </div>
+        
+        <!-- 行程时间线 -->
+        <div class="mt-4 space-y-4">
+          <div class="flex">
+            <div class="mr-3 relative">
+              <div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">1</div>
+              <div class="absolute top-6 bottom-0 left-3 w-0.5 bg-gray-200 -z-10"></div>
+            </div>
+            <div class="flex-1">
+              <div class="bg-white rounded-lg p-3 wx-shadow">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-bold">天安门广场</h4>
+                    <p class="text-xs text-gray-500 mt-1">08:00 - 10:00</p>
+                  </div>
+                  <div class="flex items-center text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    <i class="fa fa-clock-o mr-1"></i>
+                    2小时
+                  </div>
+                </div>
+                <div class="flex mt-2 space-x-2">
+                  <div class="w-16 h-16 bg-red-50 flex items-center justify-center text-red-500 rounded">
+                     <i class="fa fa-flag text-xl"></i>
+                   </div>
+                  <div class="w-16 h-16 bg-red-50 flex items-center justify-center text-red-500 rounded">
+                     <i class="fa fa-flag text-xl"></i>
+                   </div>
+                </div>
+                <div class="mt-2 flex justify-between items-center">
+                  <span class="text-xs text-gray-500">北京市东城区东长安街</span>
+                  <div class="flex space-x-2">
+                    <button class="text-xs text-gray-500 bg-gray-100 p-1.5 rounded">
+                      <i class="fa fa-map-o"></i>
+                    </button>
+                    <button class="text-xs text-primary bg-primary/10 p-1.5 rounded">
+                      <i class="fa fa-navicon"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex">
+            <div class="mr-3 relative">
+              <div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">2</div>
+              <div class="absolute top-6 bottom-0 left-3 w-0.5 bg-gray-200 -z-10"></div>
+            </div>
+            <div class="flex-1">
+              <div class="bg-white rounded-lg p-3 wx-shadow">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-bold">故宫博物院</h4>
+                    <p class="text-xs text-gray-500 mt-1">10:30 - 14:00</p>
+                  </div>
+                  <div class="flex items-center text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    <i class="fa fa-clock-o mr-1"></i>
+                    3.5小时
+                  </div>
+                </div>
+                <div class="flex mt-2 space-x-2">
+                  <div class="w-16 h-16 bg-yellow-50 flex items-center justify-center text-yellow-500 rounded">
+                     <i class="fa fa-university text-xl"></i>
+                   </div>
+                  <div class="w-16 h-16 bg-yellow-50 flex items-center justify-center text-yellow-500 rounded">
+                     <i class="fa fa-university text-xl"></i>
+                   </div>
+                </div>
+                <div class="mt-2 flex justify-between items-center">
+                  <span class="text-xs text-gray-500">北京市东城区景山前街4号</span>
+                  <div class="flex space-x-2">
+                    <button class="text-xs text-gray-500 bg-gray-100 p-1.5 rounded">
+                      <i class="fa fa-map-o"></i>
+                    </button>
+                    <button class="text-xs text-primary bg-primary/10 p-1.5 rounded">
+                      <i class="fa fa-navicon"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex">
+            <div class="mr-3">
+              <div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs">3</div>
+            </div>
+            <div class="flex-1">
+              <div class="bg-white rounded-lg p-3 wx-shadow">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h4 class="font-bold">景山公园</h4>
+                    <p class="text-xs text-gray-500 mt-1">14:30 - 16:00</p>
+                  </div>
+                  <div class="flex items-center text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    <i class="fa fa-clock-o mr-1"></i>
+                    1.5小时
+                  </div>
+                </div>
+                <div class="flex mt-2 space-x-2">
+                  <div class="w-16 h-16 bg-green-50 flex items-center justify-center text-green-500 rounded">
+                     <i class="fa fa-tree text-xl"></i>
+                   </div>
+                  <div class="w-16 h-16 bg-blue-100 rounded flex items-center justify-center text-blue-500">
+                     <i class="fa fa-tree text-2xl"></i>
+                   </div>
+                </div>
+                <div class="mt-2 flex justify-between items-center">
+                  <span class="text-xs text-gray-500">北京市西城区景山西街44号</span>
+                  <div class="flex space-x-2">
+                    <button class="text-xs text-gray-500 bg-gray-100 p-1.5 rounded">
+                      <i class="fa fa-map-o"></i>
+                    </button>
+                    <button class="text-xs text-primary bg-primary/10 p-1.5 rounded">
+                      <i class="fa fa-navicon"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 旅行小贴士 -->
+      <div class="bg-white p-4 mt-2">
+        <h3 class="font-bold mb-3">旅行小贴士</h3>
+        
+        <div class="space-y-3">
+          <div class="bg-blue-50 p-3 rounded-lg">
+            <div class="flex">
+              <div class="text-primary mr-2">
+                <i class="fa fa-cloud text-lg"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-primary">天气提醒</h4>
+                <p class="text-xs text-gray-600 mt-1">北京10月1日天气晴，温度15-25℃，建议穿薄外套，注意防晒。</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-yellow-50 p-3 rounded-lg">
+            <div class="flex">
+              <div class="text-warning mr-2">
+                <i class="fa fa-exclamation-triangle text-lg"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-warning">参观提示</h4>
+                <p class="text-xs text-gray-600 mt-1">故宫博物院需提前预约，建议携带身份证，周一闭馆。</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-green-50 p-3 rounded-lg">
+            <div class="flex">
+              <div class="text-secondary mr-2">
+                <i class="fa fa-map-signs text-lg"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-secondary">交通建议</h4>
+                <p class="text-xs text-gray-600 mt-1">天安门周边停车位紧张，建议乘坐地铁1号线在天安门东站下车。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 地图按钮 -->
+      <div class="fixed right-4 bottom-20">
+        <button class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-lg card-hover">
+          <i class="fa fa-map-o"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 景点详情页 -->
+    <div id="poi-detail-page" class="page-transition hidden">
+      <div class="wx-header p-4 flex items-center fixed top-0 left-0 right-0 bg-white z-10">
+        <button class="mr-4 text-gray-600">
+          <i class="fa fa-arrow-left text-lg"></i>
+        </button>
+        <h1 class="text-xl font-bold text-primary">景点详情</h1>
+        <div class="flex-1"></div>
+        <div class="flex space-x-4">
+          <button class="text-gray-600">
+            <i class="fa fa-share-alt text-lg"></i>
+          </button>
+          <button class="text-gray-600">
+            <i class="fa fa-heart-o text-lg"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 景点图片轮播 -->
+      <div class="relative h-56 pt-20">
+        <div class="w-full h-full overflow-hidden">
+          <div class="w-full h-full bg-yellow-50 flex items-center justify-center text-yellow-500">
+        <i class="fa fa-university text-5xl"></i>
+      </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+          <h2 class="text-white font-bold text-xl">故宫博物院</h2>
+          <div class="flex items-center mt-1">
+            <span class="text-white/90 text-xs px-2 py-0.5 rounded-full bg-white/20">AAAAA景区</span>
+            <div class="flex items-center ml-2">
+              <i class="fa fa-star text-warning text-xs"></i>
+              <span class="text-white/90 text-xs ml-1">4.8</span>
+              <span class="text-white/90 text-xs ml-2">(23.5万人点评)</span>
+            </div>
+          </div>
+        </div>
+        <!-- 轮播指示器 -->
+        <div class="absolute bottom-12 right-4 flex space-x-1">
+          <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-white/50"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-white/50"></div>
+        </div>
+      </div>
+      
+      <!-- 景点基本信息 -->
+      <div class="bg-white p-4 mt-0 rounded-t-lg">
+        <div class="flex items-start mb-4">
+          <div class="text-primary mr-2 mt-1">
+            <i class="fa fa-map-marker"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm">北京市东城区景山前街4号</p>
+          </div>
+          <button class="text-primary text-sm flex items-center">
+            <span>导航</span>
+            <i class="fa fa-navicon ml-1"></i>
+          </button>
+        </div>
+        
+        <div class="flex items-start mb-4">
+          <div class="text-primary mr-2 mt-1">
+            <i class="fa fa-clock-o"></i>
+          </div>
+          <div>
+            <p class="text-sm">开放时间：周二至周日 8:30-17:00</p>
+            <p class="text-xs text-gray-500 mt-1">周一闭馆（法定节假日除外）</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start mb-4">
+          <div class="text-primary mr-2 mt-1">
+            <i class="fa fa-ticket"></i>
+          </div>
+          <div>
+            <p class="text-sm">门票：60元/人（旺季），40元/人（淡季）</p>
+            <p class="text-xs text-gray-500 mt-1">需提前在线预约</p>
+          </div>
+        </div>
+        
+        <div class="flex items-start">
+          <div class="text-primary mr-2 mt-1">
+            <i class="fa fa-info-circle"></i>
+          </div>
+          <div>
+            <p class="text-sm">简介：故宫博物院是中国最大的古代文化艺术博物馆，也是世界上现存规模最大、保存最为完整的木质结构古建筑之一。</p>
+            <button class="text-primary text-xs mt-1">展开更多</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 交通方式 -->
+      <div class="bg-white p-4 mt-2">
+        <h3 class="font-bold mb-3">交通方式</h3>
+        
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                <i class="fa fa-subway"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium">地铁</p>
+                <p class="text-xs text-gray-500">1号线天安门东站/天安门西站下车</p>
+              </div>
+            </div>
+            <i class="fa fa-chevron-right text-gray-400"></i>
+          </div>
+          
+          <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-secondary">
+                <i class="fa fa-bus"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium">公交</p>
+                <p class="text-xs text-gray-500">1、2、52、59、82、99、120路至天安门站</p>
+              </div>
+            </div>
+            <i class="fa fa-chevron-right text-gray-400"></i>
+          </div>
+          
+          <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-warning">
+                <i class="fa fa-taxi"></i>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium">打车</p>
+                <p class="text-xs text-gray-500">从市中心约20-30元</p>
+              </div>
+            </div>
+            <i class="fa fa-chevron-right text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 周边推荐 -->
+      <div class="bg-white p-4 mt-2">
+        <h3 class="font-bold mb-3">周边推荐</h3>
+        
+        <div class="flex space-x-3 overflow-x-auto pb-2">
+          <div class="flex-shrink-0 w-36 card-hover">
+            <div class="relative rounded-lg overflow-hidden h-24">
+              <div class="w-full h-full bg-green-50 flex items-center justify-center text-green-500">
+                <i class="fa fa-tree text-3xl"></i>
+              </div>
+            </div>
+            <h4 class="text-sm font-medium mt-1 line-clamp-1">景山公园</h4>
+            <p class="text-xs text-gray-500">距离300m | 公园</p>
+          </div>
+          
+          <div class="flex-shrink-0 w-36 card-hover">
+            <div class="relative rounded-lg overflow-hidden h-24">
+              <div class="w-full h-full bg-red-50 flex items-center justify-center text-red-500">
+                <i class="fa fa-flag text-3xl"></i>
+              </div>
+            </div>
+            <h4 class="text-sm font-medium mt-1 line-clamp-1">天安门广场</h4>
+            <p class="text-xs text-gray-500">距离500m | 景点</p>
+          </div>
+          
+          <div class="flex-shrink-0 w-36 card-hover">
+            <div class="relative rounded-lg overflow-hidden h-24">
+              <div class="w-full h-full bg-purple-50 flex items-center justify-center text-purple-500">
+                <i class="fa fa-shopping-cart text-3xl"></i>
+              </div>
+            </div>
+            <h4 class="text-sm font-medium mt-1 line-clamp-1">王府井大街</h4>
+            <p class="text-xs text-gray-500">距离1km | 购物</p>
+          </div>
+          
+          <div class="flex-shrink-0 w-36 card-hover">
+            <div class="relative rounded-lg overflow-hidden h-24">
+              <div class="w-full h-full bg-orange-50 flex items-center justify-center text-orange-500">
+                <i class="fa fa-cutlery text-3xl"></i>
+              </div>
+            </div>
+            <h4 class="text-sm font-medium mt-1 line-clamp-1">全聚德烤鸭店</h4>
+            <p class="text-xs text-gray-500">距离800m | 餐厅</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部操作栏 -->
+      <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex items-center">
+        <button class="flex-1 bg-primary text-white py-2.5 rounded-full font-medium text-sm mr-3 card-hover">
+          加入行程
+        </button>
+        <button class="w-10 h-10 rounded-full border border-primary flex items-center justify-center text-primary card-hover">
+          <i class="fa fa-calendar-plus-o"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 页面切换逻辑 -->
+  <script>
+    // 简单的页面切换演示
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取搜索框，点击跳转到生成页面
+      const searchInput = document.querySelector('input[placeholder="想去哪里？输入目的地、日期、兴趣偏好"]');
+      searchInput.addEventListener('click', function() {
+        document.getElementById('home-page').classList.add('hidden');
+        document.getElementById('generate-page').classList.remove('hidden');
+        document.getElementById('generate-page').classList.add('animate-slide-in-up');
+      });
+      
+      // 返回按钮
+      const backBtn = document.getElementById('back-btn');
+      backBtn.addEventListener('click', function() {
+        document.getElementById('generate-page').classList.add('hidden');
+        document.getElementById('home-page').classList.remove('hidden');
+      });
+      
+      // 生成攻略按钮
+      const generateBtn = document.querySelector('#generate-page button.bg-primary');
+      generateBtn.addEventListener('click', function() {
+        document.getElementById('generate-page').classList.add('hidden');
+        document.getElementById('detail-page').classList.remove('hidden');
+        document.getElementById('detail-page').classList.add('animate-slide-in-up');
+      });
+      
+      // 攻略详情页中的景点点击
+      const poiItems = document.querySelectorAll('#detail-page .wx-shadow');
+      poiItems.forEach(item => {
+        item.addEventListener('click', function() {
+          document.getElementById('detail-page').classList.add('hidden');
+          document.getElementById('poi-detail-page').classList.remove('hidden');
+          document.getElementById('poi-detail-page').classList.add('animate-slide-in-up');
+        });
+      });
+      
+      // 景点详情页返回按钮
+      const poiBackBtn = document.querySelector('#poi-detail-page .fa-arrow-left').parentElement;
+      poiBackBtn.addEventListener('click', function() {
+        document.getElementById('poi-detail-page').classList.add('hidden');
+        document.getElementById('detail-page').classList.remove('hidden');
+      });
+    });
+  </script>
+</body>
+</html>
