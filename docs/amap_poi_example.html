@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高德地图POI搜索示例</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入高德地图JS API -->
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=71c9de2861765469608fd94dec354c10"></script>
+    <!-- 引入搜索插件 -->
+    <script type="text/javascript" src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+    
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1677FF',
+                        secondary: '#0AA1ED',
+                        accent: '#16C79A',
+                        neutral: '#F5F7FA',
+                        dark: '#2E3192'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'hover': '0 8px 30px rgba(0, 0, 0, 0.12)'
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 0.3s ease;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-neutral min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- 页面标题 -->
+        <header class="text-center mb-10">
+            <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3 text-shadow">
+                高德地图POI搜索示例
+            </h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                本示例展示如何使用高德地图API进行地点搜索，获取兴趣点(POI)数据，并在地图上展示搜索结果。
+            </p>
+        </header>
+        
+        <!-- 主要内容区 -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 左侧搜索控制面板 -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-card p-6 h-full transition-all-300 hover:shadow-hover">
+                    <h2 class="text-xl font-semibold text-dark mb-5 flex items-center">
+                        <i class="fa fa-search text-primary mr-2"></i>搜索设置
+                    </h2>
+                    
+                    <!-- 搜索表单 -->
+                    <form id="searchForm" class="space-y-5">
+                        <div>
+                            <label for="keywords" class="block text-sm font-medium text-gray-700 mb-1">
+                                搜索关键词
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                                    <i class="fa fa-map-marker"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    id="keywords" 
+                                    name="keywords" 
+                                    value="故宫博物院" 
+                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all-300"
+                                    placeholder="输入地点名称，如：故宫博物院"
+                                >
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-gray-700 mb-1">
+                                城市
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
+                                    <i class="fa fa-building"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    id="city" 
+                                    name="city" 
+                                    value="北京市" 
+                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all-300"
+                                    placeholder="输入城市，如：北京市"
+                                >
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="citylimit" class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    id="citylimit" 
+                                    name="citylimit" 
+                                    checked
+                                    class="form-checkbox h-5 w-5 text-primary focus:ring-primary rounded border-gray-300"
+                                >
+                                <span class="ml-2 text-sm text-gray-700">仅在指定城市内搜索</span>
+                            </label>
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2.5 px-4 rounded-lg transition-all-300 flex items-center justify-center"
+                        >
+                            <i class="fa fa-search mr-2"></i>
+                            开始搜索
+                        </button>
+                    </form>
+                    
+                    <!-- API密钥说明 -->
+                    <div class="mt-8 bg-blue-50 border-l-4 border-primary p-4 rounded-r-lg">
+                        <h3 class="text-sm font-semibold text-primary flex items-center">
+                            <i class="fa fa-info-circle mr-1"></i>
+                            开发说明
+                        </h3>
+                        <p class="mt-1 text-xs text-gray-600">
+                            请将代码中的"您的高德地图API密钥"替换为您在高德开放平台申请的实际API密钥。
+                            完整实现需要在服务器端调用高德地图Web服务API，以保护您的密钥安全。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧地图和结果展示 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- 地图容器 -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden transition-all-300 hover:shadow-hover">
+                    <div id="mapContainer" class="w-full h-[350px] min-h-[350px]"></div>
+                </div>
+                
+                <!-- 搜索结果展示 -->
+                <div class="bg-white rounded-xl shadow-card p-6 transition-all-300 hover:shadow-hover">
+                    <h2 class="text-xl font-semibold text-dark mb-4 flex items-center">
+                        <i class="fa fa-list-alt text-primary mr-2"></i>搜索结果
+                    </h2>
+                    
+                    <div id="loadingIndicator" class="hidden py-10 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <p class="mt-2 text-gray-600">正在搜索中...</p>
+                    </div>
+                    
+                    <div id="errorMessage" class="hidden bg-red-50 text-red-700 p-4 rounded-lg mb-4">
+                        <p class="flex items-start">
+                            <i class="fa fa-exclamation-circle mt-1 mr-2"></i>
+                            <span id="errorText">搜索出错，请稍后重试</span>
+                        </p>
+                    </div>
+                    
+                    <div id="noResults" class="hidden py-10 text-center text-gray-500">
+                        <i class="fa fa-search-minus text-3xl mb-2"></i>
+                        <p>未找到相关地点</p>
+                    </div>
+                    
+                    <!-- 示例POI数据展示 -->
+                    <div id="searchResults" class="space-y-4 max-h-[300px] overflow-y-auto scrollbar-hide">
+                        <!-- 示例结果 - 实际使用时会被JS动态替换 -->
+                        <div class="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0 transition-all-300 hover:bg-blue-50/50 p-2 -mx-2 rounded-lg cursor-pointer">
+                            <div class="flex items-start">
+                                <img src="https://store.is.autonavi.com/showpic/2f968490d105bb2741e17f90b85c6b79" alt="故宫博物院" class="w-20 h-16 object-cover rounded-lg mr-4">
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-dark">故宫博物院</h3>
+                                    <p class="text-sm text-gray-600 mt-1">地址：景山前街4号</p>
+                                    <div class="flex items-center mt-2 text-xs text-gray-500">
+                                        <span class="bg-blue-100 text-primary px-2 py-0.5 rounded-full">景点</span>
+                                        <span class="ml-2">ID: B000A8UIN8</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0 transition-all-300 hover:bg-blue-50/50 p-2 -mx-2 rounded-lg cursor-pointer">
+                            <div class="flex items-start">
+                                <img src="https://aos-comment.amap.com/B0FFKL520U/comment/content_media_external_file_1000007925_ss__1755577638042_70227714.jpg" alt="故宫博物院检票处" class="w-20 h-16 object-cover rounded-lg mr-4">
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-dark">故宫博物院检票处</h3>
+                                    <p class="text-sm text-gray-600 mt-1">地址：景山前街4号故宫博物院内(南侧)</p>
+                                    <div class="flex items-center mt-2 text-xs text-gray-500">
+                                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full">服务设施</span>
+                                        <span class="ml-2">ID: B0FFKL520U</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 底部信息 -->
+        <footer class="mt-12 text-center text-sm text-gray-500">
+            <p>© 2023 旅行攻略小程序 - 高德地图API示例</p>
+            <p class="mt-1">本示例仅供学习参考，实际项目中请使用合法的API密钥</p>
+        </footer>
+    </div>
+    
+    <!-- 成功提示弹窗 -->
+    <div id="successToast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+        <i class="fa fa-check-circle mr-2"></i>
+        <span>搜索成功</span>
+    </div>
+    
+    <!-- JavaScript代码 -->
+    <script>
+        // 初始化地图
+        let map = null;
+        let markers = [];
+        
+        function initMap() {
+            // 创建地图实例，默认显示北京
+            map = new AMap.Map('mapContainer', {
+                zoom: 13,
+                center: [116.397428, 39.90923],
+                resizeEnable: true
+            });
+            
+            // 添加比例尺控件
+            try {
+                if (typeof AMap.Scale === 'function') {
+                    map.addControl(new AMap.Scale());
+                }
+            } catch (e) {
+                console.warn('无法添加比例尺控件:', e);
+            }
+            
+            // 添加地图类型切换控件
+            try {
+                if (typeof AMap.MapType === 'function') {
+                    map.addControl(new AMap.MapType());
+                }
+            } catch (e) {
+                console.warn('无法添加地图类型切换控件:', e);
+            }
+        }
+        
+        // 搜索POI的函数
+        function searchPOI(keywords, city, citylimit) {
+            // 显示加载状态
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('noResults').classList.add('hidden');
+            document.getElementById('searchResults').classList.add('hidden');
+            
+            // 清除现有标记
+            clearMarkers();
+            
+            // 由于跨域限制，这里使用模拟数据
+            // 实际项目中应在服务器端调用高德地图Web服务API
+            setTimeout(() => {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                
+                // 模拟API响应数据（基于文档中的示例）
+                const mockData = {
+                    "suggestion": {
+                        "keywords": keywords,
+                        "ciytes": {
+                            "suggestion": [city]
+                        }
+                    },
+                    "pois": [
+                        {
+                            "id": "B000A8UIN8",
+                            "name": "故宫博物院",
+                            "address": "景山前街4号",
+                            "typecode": "110201|140100",
+                            "photo": "http://store.is.autonavi.com/showpic/2f968490d105bb2741e17f90b85c6b79",
+                            "location": "116.397428,39.90923"
+                        },
+                        {
+                            "id": "B0FFKL520U",
+                            "name": "故宫博物院检票处",
+                            "address": "景山前街4号故宫博物院内(南侧)",
+                            "typecode": "070000",
+                            "photo": "https://aos-comment.amap.com/B0FFKL520U/comment/content_media_external_file_1000007925_ss__1755577638042_70227714.jpg",
+                            "location": "116.398428,39.90823"
+                        },
+                        {
+                            "id": "B0FFMD4460",
+                            "name": "故宫博物院-售票处",
+                            "address": "景山前街4号故宫博物院内",
+                            "typecode": "070000",
+                            "photo": null,
+                            "location": "116.399428,39.90723"
+                        }
+                    ]
+                };
+                
+                // 显示结果
+                renderResults(mockData.pois);
+                
+                // 在地图上标记结果
+                markPOIsOnMap(mockData.pois);
+                
+                // 显示成功提示
+                showSuccessToast('搜索成功，找到 ' + mockData.pois.length + ' 个结果');
+            }, 1000);
+        }
+        
+        // 渲染搜索结果
+        function renderResults(pois) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (pois.length === 0) {
+                document.getElementById('noResults').classList.remove('hidden');
+                return;
+            }
+            
+            resultsContainer.innerHTML = '';
+            
+            pois.forEach((poi, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'border-b border-gray-100 pb-4 last:border-b-0 last:pb-0 transition-all-300 hover:bg-blue-50/50 p-2 -mx-2 rounded-lg cursor-pointer';
+                
+                // 获取POI类型对应的标签颜色和文本
+                const typeInfo = getPOITypeInfo(poi.typecode);
+                
+                // 创建结果项HTML
+                resultItem.innerHTML = `
+                    <div class="flex items-start">
+                        <img src="${poi.photo || 'https://placehold.co/80x64/e2e8f0/64748b?text=No+Image'}" alt="${poi.name}" class="w-20 h-16 object-cover rounded-lg mr-4">
+                        <div class="flex-1">
+                            <h3 class="font-medium text-dark">${poi.name}</h3>
+                            <p class="text-sm text-gray-600 mt-1">地址：${poi.address}</p>
+                            <div class="flex items-center mt-2 text-xs text-gray-500">
+                                <span class="bg-${typeInfo.color}-100 text-${typeInfo.color}-700 px-2 py-0.5 rounded-full">${typeInfo.name}</span>
+                                <span class="ml-2">ID: ${poi.id}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加点击事件，点击后在地图上聚焦到该POI
+                resultItem.addEventListener('click', () => {
+                    if (poi.location) {
+                        const location = poi.location.split(',');
+                        map.setCenter([parseFloat(location[0]), parseFloat(location[1])]);
+                        map.setZoom(16);
+                    }
+                });
+                
+                resultsContainer.appendChild(resultItem);
+            });
+            
+            resultsContainer.classList.remove('hidden');
+        }
+        
+        // 根据POI类型代码获取类型信息
+        function getPOITypeInfo(typeCode) {
+            // 简化的类型映射，实际项目中可以使用完整的类型映射表
+            const typeMap = {
+                '110201': { name: '景点', color: 'blue' },
+                '140100': { name: '博物馆', color: 'indigo' },
+                '070000': { name: '服务设施', color: 'green' }
+            };
+            
+            // 提取第一个类型代码
+            const firstTypeCode = typeCode.split('|')[0];
+            
+            return typeMap[firstTypeCode] || { name: '其他', color: 'gray' };
+        }
+        
+        // 在地图上标记POI
+        function markPOIsOnMap(pois) {
+            pois.forEach(poi => {
+                if (poi.location) {
+                    const location = poi.location.split(',');
+                    const marker = new AMap.Marker({
+                        position: [parseFloat(location[0]), parseFloat(location[1])],
+                        title: poi.name,
+                        map: map
+                    });
+                    
+                    // 添加信息窗口
+                    const infoWindow = new AMap.InfoWindow({
+                        content: `
+                            <div style="padding: 10px;">
+                                <h4 style="margin: 0 0 5px 0;">${poi.name}</h4>
+                                <p style="margin: 0; font-size: 12px; color: #666;">地址：${poi.address}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #999;">ID: ${poi.id}</p>
+                            </div>
+                        `,
+                        offset: new AMap.Pixel(0, -30)
+                    });
+                    
+                    // 点击标记显示信息窗口
+                    marker.on('click', () => {
+                        infoWindow.open(map, marker.getPosition());
+                    });
+                    
+                    markers.push(marker);
+                }
+            });
+            
+            // 如果有多个标记，调整地图视野以显示所有标记
+            if (markers.length > 0) {
+                const positions = markers.map(marker => marker.getPosition());
+                map.setFitView(positions, false, [50, 50, 50, 50]);
+            }
+        }
+        
+        // 清除地图上的所有标记
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+        
+        // 显示成功提示
+        function showSuccessToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.querySelector('span').textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // 3秒后隐藏提示
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        
+        // 显示错误信息
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+        
+        // 表单提交事件
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const keywords = document.getElementById('keywords').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const citylimit = document.getElementById('citylimit').checked;
+            
+            if (!keywords) {
+                alert('请输入搜索关键词');
+                return;
+            }
+            
+            searchPOI(keywords, city, citylimit);
+        });
+        
+        // 页面加载完成后初始化地图
+        window.addEventListener('load', () => {
+            // 为了避免API密钥问题导致页面显示错误，这里添加一个检查
+            try {
+                initMap();
+                // 页面加载时自动执行一次搜索
+                document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+            } catch (error) {
+                console.error('地图初始化失败:', error);
+                document.getElementById('mapContainer').innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                        <div class="text-center px-4">
+                            <i class="fa fa-map-o text-4xl text-gray-300 mb-2"></i>
+                            <p class="text-gray-500 text-sm">地图加载失败，请检查API密钥配置</p>
+                            <p class="text-gray-400 text-xs mt-1">示例数据仍可查看</p>
+                        </div>
+                    </div>
+                `;
+                
+                // 直接显示示例数据
+                document.getElementById('searchResults').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

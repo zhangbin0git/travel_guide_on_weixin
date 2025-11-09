@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晋祠博物馆 - 详细信息</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2D5B78',
+                        secondary: '#D9A566',
+                        accent: '#E86E5A',
+                        light: '#F2F2F2',
+                        dark: '#292929'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 导航栏 -->
+    <nav class="bg-primary shadow-md fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fa fa-map-marker text-white text-2xl mr-3"></i>
+                    <span class="text-white text-xl font-bold">晋祠博物馆导览</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="#overview" class="text-white hover:text-secondary px-3 py-2 rounded-md text-sm font-medium">概览</a>
+                    <a href="#details" class="text-white hover:text-secondary px-3 py-2 rounded-md text-sm font-medium">详细信息</a>
+                    <a href="#attractions" class="text-white hover:text-secondary px-3 py-2 rounded-md text-sm font-medium">景点</a>
+                    <a href="#gallery" class="text-white hover:text-secondary px-3 py-2 rounded-md text-sm font-medium">图片</a>
+                    <a href="#tips" class="text-white hover:text-secondary px-3 py-2 rounded-md text-sm font-medium">参观提示</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="menu-toggle" class="text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#overview" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-medium">概览</a>
+                <a href="#details" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-medium">详细信息</a>
+                <a href="#attractions" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-medium">景点</a>
+                <a href="#gallery" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-medium">图片</a>
+                <a href="#tips" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-medium">参观提示</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <header class="pt-16 relative h-[70vh] overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="http://store.is.autonavi.com/showpic/377e2866af7e31e9fc7985306c3f4846" alt="晋祠博物馆全景" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-black opacity-40"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-start">
+            <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold text-white text-shadow leading-tight">
+                晋祠博物馆
+            </h1>
+            <p class="mt-4 text-[clamp(1rem,2vw,1.25rem)] text-white text-shadow max-w-2xl">
+                中国著名的古典园林和历史建筑群，国家AAAA级旅游景区
+            </p>
+            <div class="mt-8">
+                <a href="#details" class="bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-8 rounded-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
+                    <span>了解更多</span>
+                    <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- 概览部分 -->
+        <section id="overview" class="mb-16">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/2">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-6 flex items-center">
+                        <i class="fa fa-info-circle text-primary mr-3"></i>景点概览
+                    </h2>
+                    <p class="text-gray-700 mb-4 leading-relaxed">
+                        晋祠博物馆位于山西省太原市晋源区晋祠镇，是中国现存最早的古典园林和祭祀建筑之一，始建于北魏时期，历经多个朝代的扩建和修缮，形成了现在的规模。
+                    </p>
+                    <p class="text-gray-700 mb-4 leading-relaxed">
+                        晋祠博物馆以其精美的古建筑群、丰富的历史文化内涵和独特的园林景观闻名于世，被誉为"山西小江南"。
+                    </p>
+                    <p class="text-gray-700 leading-relaxed">
+                        主要看点包括圣母殿、鱼沼飞梁、献殿、周柏等历史建筑和文物，这些建筑不仅展示了中国古代建筑艺术的精髓，也承载着丰富的历史文化信息。
+                    </p>
+                </div>
+                <div class="md:w-1/2 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-primary mb-4">基本信息</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker text-accent mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-medium text-dark">地址：</span>
+                                <span class="text-gray-700">晋祠天龙山景区内(东侧)</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-clock-o text-accent mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-medium text-dark">开放时间：</span>
+                                <span class="text-gray-700">08:00-17:30（夏季）；08:30-17:00（冬季）</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-ticket text-accent mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-medium text-dark">门票：</span>
+                                <span class="text-gray-700">80元/人（参考价格）</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone text-accent mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-medium text-dark">联系电话：</span>
+                                <span class="text-gray-700">0351-6020014</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-car text-accent mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-medium text-dark">交通：</span>
+                                <span class="text-gray-700">太原市内乘848、804、856路公交车可到达</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-globe text-accent mt-1 mr-3"></i>
+                            <div>
+                                <span class="font-medium text-dark">官网：</span>
+                                <a href="" class="text-primary hover:underline">www.jinci.net</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细信息部分 -->
+        <section id="details" class="mb-16">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-8 flex items-center">
+                <i class="fa fa-file-text-o text-primary mr-3"></i>详细介绍
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="prose max-w-none">
+                        <h3 class="text-xl font-semibold text-primary mb-4">历史渊源</h3>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            晋祠博物馆始建于北魏太和年间（477-499年），最初是为了纪念晋国开国诸侯唐叔虞而建，原名唐叔虞祠。历经北齐、隋唐、宋元明清等朝代的扩建和修缮，形成了现在的规模。
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold text-primary mb-4">建筑特色</h3>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            晋祠博物馆占地面积约150亩，主要由三大建筑群组成：北部的唐叔虞祠、中部的圣母殿和南部的文昌宫。整个建筑群布局严谨，层次分明，充分体现了中国传统建筑的美学思想。
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold text-primary mb-4">文化价值</h3>
+                        <p class="text-gray-700 mb-4 leading-relaxed">
+                            晋祠博物馆不仅是一处重要的历史文化遗址，也是中国古代建筑艺术的杰出代表。其中，圣母殿、鱼沼飞梁等建筑被列为国家一级文物保护单位，具有极高的历史、艺术和科学价值。
+                        </p>
+                        
+                        <h3 class="text-xl font-semibold text-primary mb-4">文物收藏</h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            晋祠博物馆收藏了大量的历史文物和艺术品，包括碑刻、雕塑、绘画等。其中，宋代侍女像、唐太宗御制碑等都是珍贵的文物精品。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 景点部分 -->
+        <section id="attractions" class="mb-16">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-8 flex items-center">
+                <i class="fa fa-camera text-primary mr-3"></i>主要景点
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 圣母殿 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1518815042214-6b6115cc5630?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="圣母殿" class="w-full h-full object-cover transition duration-500 transform hover:scale-110">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary mb-2">圣母殿</h3>
+                        <p class="text-gray-600 text-sm">创建于北宋天圣年间（1023-1032年），是晋祠的主殿，供奉着姜子牙的女儿、周武王的王后邑姜。殿内保存有宋代彩塑43尊，被誉为"东方彩塑艺术的宝库"。</p>
+                    </div>
+                </div>
+                
+                <!-- 鱼沼飞梁 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1543512214-318c7553f230?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="鱼沼飞梁" class="w-full h-full object-cover transition duration-500 transform hover:scale-110">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary mb-2">鱼沼飞梁</h3>
+                        <p class="text-gray-600 text-sm">位于圣母殿前，是一座十字形的桥梁，建于北宋时期。这种结构独特的桥梁在中国古代建筑中极为罕见，是中国现存最早的十字桥。</p>
+                    </div>
+                </div>
+                
+                <!-- 周柏 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1567750734115-940bb0838a22?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="周柏" class="w-full h-full object-cover transition duration-500 transform hover:scale-110">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary mb-2">周柏</h3>
+                        <p class="text-gray-600 text-sm">位于圣母殿北侧，树龄已有3000多年，是晋祠的"三绝"之一。周柏高18米，胸围5.6米，虽历经千年风雨，依然枝繁叶茂，被誉为"活文物"。</p>
+                    </div>
+                </div>
+                
+                <!-- 献殿 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1529144776573-4e4baa193fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="献殿" class="w-full h-full object-cover transition duration-500 transform hover:scale-110">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary mb-2">献殿</h3>
+                        <p class="text-gray-600 text-sm">建于金大定八年（1168年），是祭祀时摆放祭品的场所。殿内斗拱硕大，结构简洁，体现了金代建筑的特点。</p>
+                    </div>
+                </div>
+                
+                <!-- 唐叔虞祠 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1566195992011-82b61b08026d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="唐叔虞祠" class="w-full h-full object-cover transition duration-500 transform hover:scale-110">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary mb-2">唐叔虞祠</h3>
+                        <p class="text-gray-600 text-sm">是晋祠最早的建筑，始建于北魏时期，供奉着晋国开国诸侯唐叔虞。祠内保存有唐碑、周柏等历史文物。</p>
+                    </div>
+                </div>
+                
+                <!-- 难老泉 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="难老泉" class="w-full h-full object-cover transition duration-500 transform hover:scale-110">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary mb-2">难老泉</h3>
+                        <p class="text-gray-600 text-sm">是晋祠的"三绝"之一，泉水常年恒温17℃，清澈见底。泉水从悬瓮山下涌出，千年不涸，被誉为"晋阳第一泉"。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图片展示 -->
+        <section id="gallery" class="mb-16">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-8 flex items-center">
+                <i class="fa fa-images text-primary mr-3"></i>图片展示
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="overflow-hidden rounded-lg cursor-pointer transition-all duration-300 hover:scale-105">
+                    <img src="http://store.is.autonavi.com/showpic/377e2866af7e31e9fc7985306c3f4846" alt="晋祠全景" class="w-full h-full object-cover aspect-square">
+                </div>
+                <div class="overflow-hidden rounded-lg cursor-pointer transition-all duration-300 hover:scale-105">
+                    <img src="https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="晋祠建筑" class="w-full h-full object-cover aspect-square">
+                </div>
+                <div class="overflow-hidden rounded-lg cursor-pointer transition-all duration-300 hover:scale-105">
+                    <img src="https://images.unsplash.com/photo-1498307833015-e7b400441eb8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="晋祠园林" class="w-full h-full object-cover aspect-square">
+                </div>
+                <div class="overflow-hidden rounded-lg cursor-pointer transition-all duration-300 hover:scale-105">
+                    <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="晋祠古柏" class="w-full h-full object-cover aspect-square">
+                </div>
+            </div>
+        </section>
+
+        <!-- 参观提示 -->
+        <section id="tips" class="mb-16">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-8 flex items-center">
+                <i class="fa fa-lightbulb-o text-primary mr-3"></i>参观提示
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary mb-4">最佳游览时间</h3>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-3"></i>
+                                    <span>春季（4-5月）：春暖花开，气候宜人</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-check-circle text-secondary mt-1 mr-3"></i>
+                                    <span>秋季（9-10月）：秋色宜人，游客相对较少</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-times-circle text-red-500 mt-1 mr-3"></i>
+                                    <span>夏季（7-8月）：气温较高，建议做好防晒措施</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-times-circle text-red-500 mt-1 mr-3"></i>
+                                    <span>冬季（12-2月）：天气较冷，但游客较少</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary mb-4">游览建议</h3>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <i class="fa fa-info-circle text-accent mt-1 mr-3"></i>
+                                    <span>建议游览时间：2-3小时</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-info-circle text-accent mt-1 mr-3"></i>
+                                    <span>博物馆内有专业讲解服务，可根据需要选择</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-info-circle text-accent mt-1 mr-3"></i>
+                                    <span>景区内禁止吸烟，请遵守相关规定</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-info-circle text-accent mt-1 mr-3"></i>
+                                    <span>建议穿舒适的鞋子，景区内需要步行较多</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 交通指南 -->
+        <section class="mb-16">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-8 flex items-center">
+                <i class="fa fa-bus text-primary mr-3"></i>交通指南
+            </h2>
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary mb-4">公交线路</h3>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-center">
+                                    <i class="fa fa-bus text-secondary mr-3"></i>
+                                    <div>
+                                        <span class="font-medium">848路公交车：</span>
+                                        <span>太原火车站 → 晋祠公园站</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-bus text-secondary mr-3"></i>
+                                    <div>
+                                        <span class="font-medium">804路公交车：</span>
+                                        <span>太原火车站 → 晋祠公园站</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa fa-bus text-secondary mr-3"></i>
+                                    <div>
+                                        <span class="font-medium">856路公交车：</span>
+                                        <span>太原南站 → 晋祠公园站</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary mb-4">自驾路线</h3>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <i class="fa fa-car text-secondary mt-1 mr-3"></i>
+                                    <span>太原市区 → 滨河西路 → 晋祠路 → 晋祠博物馆</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fa fa-parking text-accent mt-1 mr-3"></i>
+                                    <span>景区内有停车场，收费标准：小型车10元/次，大型车20元/次</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">晋祠博物馆</h3>
+                    <p class="text-gray-400 mb-4">
+                        中国著名的古典园林和历史建筑群，国家AAAA级旅游景区
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-wechat text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="flex items-center">
+                            <i class="fa fa-map-marker mr-3"></i>
+                            <span>晋祠天龙山景区内(东侧)</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-phone mr-3"></i>
+                            <span>0351-6020014</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-envelope mr-3"></i>
+                            <span>info@jinci.net</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-clock-o mr-3"></i>
+                            <span>08:00-17:30</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="#overview" class="text-gray-400 hover:text-white transition-colors">
+                                景点概览
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#details" class="text-gray-400 hover:text-white transition-colors">
+                                详细介绍
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#attractions" class="text-gray-400 hover:text-white transition-colors">
+                                主要景点
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#tips" class="text-gray-400 hover:text-white transition-colors">
+                                参观提示
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                <p>&copy; 2024 晋祠博物馆导览. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 滚动监听
+        window.addEventListener('scroll', () => {
+            const backToTop = document.getElementById('back-to-top');
+            const nav = document.querySelector('nav');
+            
+            // 导航栏样式变化
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-primary/95', 'backdrop-blur-sm');
+                nav.classList.remove('bg-primary');
+            } else {
+                nav.classList.add('bg-primary');
+                nav.classList.remove('bg-primary/95', 'backdrop-blur-sm');
+            }
+            
+            // 返回顶部按钮显示/隐藏
+            if (window.scrollY > 300) {
+                backToTop.classList.remove('opacity-0', 'invisible');
+                backToTop.classList.add('opacity-100', 'visible');
+            } else {
+                backToTop.classList.add('opacity-0', 'invisible');
+                backToTop.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        // 返回顶部功能
+        document.getElementById('back-to-top').addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动端菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
