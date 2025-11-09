@@ -1,0 +1,803 @@
+<template>
+  <view class="guide-detail-page">
+    <!-- 顶部导航 -->
+    <view class="nav-bar">
+      <view class="nav-left" @tap="goBack">
+        <text class="nav-icon">←</text>
+      </view>
+      <view class="nav-title">攻略详情</view>
+      <view class="nav-right">
+        <text class="nav-icon" @tap="toggleFavorite">{{ isFavorite ? '❤️' : '🤍' }}</text>
+        <text class="nav-icon" @tap="shareGuide">📤</text>
+      </view>
+    </view>
+    
+    <!-- 攻略内容 -->
+    <scroll-view 
+      class="content-container" 
+      scroll-y 
+      :scroll-top="scrollTop"
+      @scroll="onScroll"
+    >
+      <!-- 封面图 -->
+      <view class="cover-container">
+        <image 
+          class="cover-image" 
+          :src="guideData.coverImage" 
+          mode="aspectFill"
+        />
+        <view class="cover-overlay">
+          <text class="cover-title">{{ guideData.title }}</text>
+          <view class="cover-meta">
+            <text class="cover-destination">{{ guideData.destination }}</text>
+            <text class="cover-days">{{ guideData.days }}天</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 攻略信息 -->
+      <view class="info-container">
+        <view class="info-item">
+          <text class="info-label">作者</text>
+          <text class="info-value">{{ guideData.author }}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">发布时间</text>
+          <text class="info-value">{{ guideData.publishTime }}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">浏览量</text>
+          <text class="info-value">{{ guideData.viewCount }}次</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">收藏量</text>
+          <text class="info-value">{{ guideData.favoriteCount }}次</text>
+        </view>
+      </view>
+      
+      <!-- 行程概览 -->
+      <view class="section-container">
+        <view class="section-title">行程概览</view>
+        <view class="timeline-container">
+          <view 
+            class="timeline-item" 
+            v-for="(day, index) in guideData.itinerary" 
+            :key="index"
+          >
+            <view class="timeline-dot"></view>
+            <view class="timeline-content">
+              <view class="timeline-day">第{{ index + 1 }}天</view>
+              <view class="timeline-title">{{ day.title }}</view>
+              <view class="timeline-desc">{{ day.description }}</view>
+              <view class="timeline-places">
+                <text 
+                  class="place-tag" 
+                  v-for="(place, placeIndex) in day.places" 
+                  :key="placeIndex"
+                >{{ place }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 详细行程 -->
+      <view class="section-container">
+        <view class="section-title">详细行程</view>
+        <view 
+          class="day-container" 
+          v-for="(day, index) in guideData.itinerary" 
+          :key="index"
+        >
+          <view class="day-header">
+            <text class="day-title">第{{ index + 1 }}天：{{ day.title }}</text>
+          </view>
+          <view 
+            class="activity-item" 
+            v-for="(activity, actIndex) in day.activities" 
+            :key="actIndex"
+          >
+            <view class="activity-time">{{ activity.time }}</view>
+            <view class="activity-content">
+              <view class="activity-title">{{ activity.title }}</view>
+              <view class="activity-desc">{{ activity.description }}</view>
+              <view class="activity-images" v-if="activity.images && activity.images.length">
+                <image 
+                  class="activity-image" 
+                  v-for="(img, imgIndex) in activity.images" 
+                  :key="imgIndex"
+                  :src="img" 
+                  mode="aspectFill"
+                  @tap="previewImage(activity.images, imgIndex)"
+                />
+              </view>
+              <view class="activity-tips" v-if="activity.tips">
+                <text class="tips-label">💡 小贴士：</text>
+                <text class="tips-content">{{ activity.tips }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 费用预算 -->
+      <view class="section-container">
+        <view class="section-title">费用预算</view>
+        <view class="budget-container">
+          <view class="budget-item">
+            <text class="budget-label">交通</text>
+            <text class="budget-value">¥{{ guideData.budget.transportation }}</text>
+          </view>
+          <view class="budget-item">
+            <text class="budget-label">住宿</text>
+            <text class="budget-value">¥{{ guideData.budget.accommodation }}</text>
+          </view>
+          <view class="budget-item">
+            <text class="budget-label">餐饮</text>
+            <text class="budget-value">¥{{ guideData.budget.food }}</text>
+          </view>
+          <view class="budget-item">
+            <text class="budget-label">门票</text>
+            <text class="budget-value">¥{{ guideData.budget.tickets }}</text>
+          </view>
+          <view class="budget-item total">
+            <text class="budget-label">总计</text>
+            <text class="budget-value">¥{{ guideData.budget.total }}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 注意事项 -->
+      <view class="section-container">
+        <view class="section-title">注意事项</view>
+        <view class="notice-container">
+          <view 
+            class="notice-item" 
+            v-for="(notice, index) in guideData.notices" 
+            :key="index"
+          >
+            <text class="notice-icon">⚠️</text>
+            <text class="notice-text">{{ notice }}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 底部占位 -->
+      <view class="bottom-placeholder"></view>
+    </scroll-view>
+    
+    <!-- 底部操作栏 -->
+    <view class="bottom-bar">
+      <view class="action-item" @tap="toggleFavorite">
+        <text class="action-icon">{{ isFavorite ? '❤️' : '🤍' }}</text>
+        <text class="action-text">收藏</text>
+      </view>
+      <view class="action-item" @tap="shareGuide">
+        <text class="action-icon">📤</text>
+        <text class="action-text">分享</text>
+      </view>
+      <view class="action-item" @tap="generatePlan">
+        <text class="action-icon">📅</text>
+        <text class="action-text">生成计划</text>
+      </view>
+      <view class="action-button" @tap="startNavigation">
+        <text class="button-text">开始导航</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import wepy from '@wepy/core';
+
+wepy.page({
+  data: {
+    guideId: 0,
+    scrollTop: 0,
+    isFavorite: false,
+    guideData: {
+      id: 1,
+      title: '北京三日游完美攻略',
+      coverImage: 'https://picsum.photos/seed/guide-detail/750/400.jpg',
+      destination: '北京',
+      days: 3,
+      author: '旅行达人',
+      publishTime: '2023-05-15',
+      viewCount: 12850,
+      favoriteCount: 856,
+      itinerary: [
+        {
+          title: '故宫-天安门广场',
+          description: '游览皇家宫殿，感受历史文化',
+          places: ['故宫', '天安门广场', '国家博物馆'],
+          activities: [
+            {
+              time: '09:00',
+              title: '天安门广场',
+              description: '观看升旗仪式，参观人民英雄纪念碑',
+              images: ['https://picsum.photos/seed/tiananmen1/300/200.jpg', 'https://picsum.photos/seed/tiananmen2/300/200.jpg'],
+              tips: '升旗仪式时间随日出时间变化，建议提前查询'
+            },
+            {
+              time: '10:30',
+              title: '故宫博物院',
+              description: '游览太和殿、乾清宫等主要宫殿',
+              images: ['https://picsum.photos/seed/gugong1/300/200.jpg', 'https://picsum.photos/seed/gugong2/300/200.jpg'],
+              tips: '建议提前网上预约门票，避免现场排队'
+            },
+            {
+              time: '14:00',
+              title: '国家博物馆',
+              description: '参观古代中国陈列展',
+              images: ['https://picsum.photos/seed/museum1/300/200.jpg'],
+              tips: '周一闭馆，注意开放时间'
+            }
+          ]
+        },
+        {
+          title: '长城-明十三陵',
+          description: '登长城做好汉，探访明代皇陵',
+          places: ['八达岭长城', '明十三陵'],
+          activities: [
+            {
+              time: '08:00',
+              title: '八达岭长城',
+              description: '登长城，体验不到长城非好汉的豪情',
+              images: ['https://picsum.photos/seed/greatwall1/300/200.jpg', 'https://picsum.photos/seed/greatwall2/300/200.jpg'],
+              tips: '建议穿舒适的运动鞋，带好防晒用品'
+            },
+            {
+              time: '14:00',
+              title: '明十三陵',
+              description: '参观定陵，了解明代皇家陵寝文化',
+              images: ['https://picsum.photos/seed/mingtombs1/300/200.jpg'],
+              tips: '定陵是唯一开放地宫的皇陵，值得一看'
+            }
+          ]
+        },
+        {
+          title: '颐和园-圆明园',
+          description: '游览皇家园林，感受古典园林之美',
+          places: ['颐和园', '圆明园'],
+          activities: [
+            {
+              time: '09:00',
+              title: '颐和园',
+              description: '游览昆明湖、万寿山、长廊等景点',
+              images: ['https://picsum.photos/seed/yiheyuan1/300/200.jpg', 'https://picsum.photos/seed/yiheyuan2/300/200.jpg'],
+              tips: '建议从东宫门进入，游览路线更合理'
+            },
+            {
+              time: '14:00',
+              title: '圆明园',
+              description: '参观遗址公园，了解历史',
+              images: ['https://picsum.photos/seed/yuanmingyuan1/300/200.jpg'],
+              tips: '可以租借讲解器，了解遗址历史'
+            }
+          ]
+        }
+      ],
+      budget: {
+        transportation: 300,
+        accommodation: 600,
+        food: 450,
+        tickets: 280,
+        total: 1630
+      },
+      notices: [
+        '故宫、长城等热门景点建议提前网上预约门票',
+        '北京早晚温差大，注意带好合适的衣物',
+        '地铁是北京最便捷的交通工具，建议办理交通卡',
+        '旅游旺季人流量大，注意安全并保管好随身物品'
+      ]
+    }
+  },
+  
+  onLoad(options: any) {
+    this.guideId = options.id || 0;
+    this.loadGuideDetail();
+    this.checkFavoriteStatus();
+  },
+  
+  onShow() {
+    // 页面显示时检查收藏状态
+    this.checkFavoriteStatus();
+  },
+  
+  onShareAppMessage() {
+    return {
+      title: this.guideData.title,
+      path: `/pages/guide-detail/index?id=${this.guideId}`,
+      imageUrl: this.guideData.coverImage
+    };
+  },
+  
+  methods: {
+    /**
+     * 加载攻略详情
+     */
+    async loadGuideDetail() {
+      try {
+        wx.showLoading({
+          title: '加载中...'
+        });
+        
+        // 这里可以调用API获取数据
+        // const res = await api.getGuideDetail(this.guideId);
+        // this.guideData = res.data;
+        
+        wx.hideLoading();
+      } catch (error) {
+        wx.hideLoading();
+        console.error('加载攻略详情失败:', error);
+        wx.showToast({
+          title: '加载失败',
+          icon: 'none'
+        });
+      }
+    },
+    
+    /**
+     * 检查收藏状态
+     */
+    checkFavoriteStatus() {
+      // 这里可以调用API检查收藏状态
+      // const res = api.checkFavorite(this.guideId);
+      // this.isFavorite = res.data.isFavorite;
+    },
+    
+    /**
+     * 返回上一页
+     */
+    goBack() {
+      wx.navigateBack();
+    },
+    
+    /**
+     * 切换收藏状态
+     */
+    async toggleFavorite() {
+      try {
+        if (this.isFavorite) {
+          // 取消收藏
+          // await api.cancelFavorite(this.guideId);
+          wx.showToast({
+            title: '已取消收藏',
+            icon: 'success'
+          });
+        } else {
+          // 添加收藏
+          // await api.addFavorite(this.guideId);
+          wx.showToast({
+            title: '收藏成功',
+            icon: 'success'
+          });
+        }
+        this.isFavorite = !this.isFavorite;
+      } catch (error) {
+        console.error('收藏操作失败:', error);
+        wx.showToast({
+          title: '操作失败',
+          icon: 'none'
+        });
+      }
+    },
+    
+    /**
+     * 分享攻略
+     */
+    shareGuide() {
+      // 这里可以调用自定义分享功能
+      wx.showShareMenu({
+        withShareTicket: true
+      });
+    },
+    
+    /**
+     * 生成计划
+     */
+    generatePlan() {
+      wx.navigateTo({
+        url: `/pages/plan/index?guideId=${this.guideId}`
+      });
+    },
+    
+    /**
+     * 开始导航
+     */
+    startNavigation() {
+      wx.navigateTo({
+        url: `/pages/navigation/index?guideId=${this.guideId}`
+      });
+    },
+    
+    /**
+     * 滚动事件
+     */
+    onScroll(e: any) {
+      this.scrollTop = e.detail.scrollTop;
+    },
+    
+    /**
+     * 预览图片
+     */
+    previewImage(images: string[], current: number) {
+      wx.previewImage({
+        urls: images,
+        current: current
+      });
+    }
+  }
+});
+</script>
+
+<style lang="scss" src="@/assets/styles/index.scss" />
+
+<style lang="scss">
+.guide-detail-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 20rpx;
+  background-color: #ffffff;
+  border-bottom: 1rpx solid #eee;
+  position: relative;
+  z-index: 100;
+  
+  .nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    width: 150rpx;
+    
+    .nav-icon {
+      font-size: 36rpx;
+      margin: 0 10rpx;
+    }
+  }
+  
+  .nav-left {
+    justify-content: flex-start;
+  }
+  
+  .nav-right {
+    justify-content: flex-end;
+  }
+  
+  .nav-title {
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+  }
+}
+
+.content-container {
+  flex: 1;
+  height: 0;
+}
+
+.cover-container {
+  position: relative;
+  height: 400rpx;
+  
+  .cover-image {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .cover-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40rpx 30rpx;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    
+    .cover-title {
+      display: block;
+      font-size: 36rpx;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 16rpx;
+    }
+    
+    .cover-meta {
+      display: flex;
+      
+      .cover-destination {
+        font-size: 28rpx;
+        color: #ffffff;
+        margin-right: 20rpx;
+      }
+      
+      .cover-days {
+        font-size: 28rpx;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.info-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 30rpx;
+  background-color: #ffffff;
+  margin-bottom: 20rpx;
+  
+  .info-item {
+    width: 50%;
+    margin-bottom: 20rpx;
+    
+    .info-label {
+      font-size: 24rpx;
+      color: #999;
+      margin-right: 10rpx;
+    }
+    
+    .info-value {
+      font-size: 28rpx;
+      color: #333;
+    }
+  }
+}
+
+.section-container {
+  margin-bottom: 20rpx;
+  background-color: #ffffff;
+  
+  .section-title {
+    padding: 30rpx;
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1rpx solid #eee;
+  }
+}
+
+.timeline-container {
+  padding: 30rpx;
+  
+  .timeline-item {
+    display: flex;
+    margin-bottom: 40rpx;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .timeline-dot {
+      width: 20rpx;
+      height: 20rpx;
+      margin-right: 20rpx;
+      margin-top: 10rpx;
+      border-radius: 50%;
+      background-color: #007aff;
+    }
+    
+    .timeline-content {
+      flex: 1;
+      
+      .timeline-day {
+        font-size: 28rpx;
+        font-weight: bold;
+        color: #007aff;
+        margin-bottom: 8rpx;
+      }
+      
+      .timeline-title {
+        font-size: 30rpx;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8rpx;
+      }
+      
+      .timeline-desc {
+        font-size: 26rpx;
+        color: #666;
+        margin-bottom: 16rpx;
+      }
+      
+      .timeline-places {
+        display: flex;
+        flex-wrap: wrap;
+        
+        .place-tag {
+          padding: 6rpx 16rpx;
+          margin-right: 16rpx;
+          margin-bottom: 16rpx;
+          font-size: 24rpx;
+          color: #007aff;
+          background-color: rgba(0, 122, 255, 0.1);
+          border-radius: 20rpx;
+        }
+      }
+    }
+  }
+}
+
+.day-container {
+  padding: 0 30rpx 30rpx;
+  
+  .day-header {
+    padding: 20rpx 0;
+    border-bottom: 1rpx dashed #eee;
+    
+    .day-title {
+      font-size: 30rpx;
+      font-weight: bold;
+      color: #333;
+    }
+  }
+  
+  .activity-item {
+    display: flex;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid #f5f5f5;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .activity-time {
+      width: 100rpx;
+      font-size: 24rpx;
+      color: #999;
+    }
+    
+    .activity-content {
+      flex: 1;
+      
+      .activity-title {
+        font-size: 28rpx;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8rpx;
+      }
+      
+      .activity-desc {
+        font-size: 26rpx;
+        color: #666;
+        margin-bottom: 16rpx;
+      }
+      
+      .activity-images {
+        display: flex;
+        margin-bottom: 16rpx;
+        
+        .activity-image {
+          width: 200rpx;
+          height: 150rpx;
+          margin-right: 16rpx;
+          border-radius: 8rpx;
+        }
+      }
+      
+      .activity-tips {
+        padding: 16rpx;
+        background-color: #f8f8f8;
+        border-radius: 8rpx;
+        
+        .tips-label {
+          font-size: 24rpx;
+          color: #ff9500;
+        }
+        
+        .tips-content {
+          font-size: 24rpx;
+          color: #666;
+        }
+      }
+    }
+  }
+}
+
+.budget-container {
+  padding: 30rpx;
+  
+  .budget-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 16rpx 0;
+    border-bottom: 1rpx solid #f5f5f5;
+    
+    &.total {
+      font-weight: bold;
+      border-top: 1rpx solid #eee;
+      margin-top: 16rpx;
+      padding-top: 24rpx;
+    }
+    
+    .budget-label {
+      font-size: 28rpx;
+      color: #333;
+    }
+    
+    .budget-value {
+      font-size: 28rpx;
+      color: #333;
+    }
+    
+    &.total .budget-value {
+      color: #ff3b30;
+    }
+  }
+}
+
+.notice-container {
+  padding: 30rpx;
+  
+  .notice-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20rpx;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .notice-icon {
+      margin-right: 16rpx;
+      font-size: 28rpx;
+    }
+    
+    .notice-text {
+      flex: 1;
+      font-size: 26rpx;
+      color: #666;
+      line-height: 1.6;
+    }
+  }
+}
+
+.bottom-placeholder {
+  height: 120rpx;
+}
+
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  height: 100rpx;
+  padding: 0 30rpx;
+  background-color: #ffffff;
+  border-top: 1rpx solid #eee;
+  
+  .action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 40rpx;
+    
+    .action-icon {
+      font-size: 32rpx;
+      margin-bottom: 4rpx;
+    }
+    
+    .action-text {
+      font-size: 20rpx;
+      color: #666;
+    }
+  }
+  
+  .action-button {
+    flex: 1;
+    height: 70rpx;
+    line-height: 70rpx;
+    text-align: center;
+    background-color: #007aff;
+    border-radius: 35rpx;
+    
+    .button-text {
+      font-size: 28rpx;
+      color: #ffffff;
+    }
+  }
+}
+</style>

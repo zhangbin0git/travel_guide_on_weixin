@@ -1,0 +1,543 @@
+<template>
+  <view class="index-page">
+    <!-- 顶部搜索栏 -->
+    <view class="search-container">
+      <view class="search-box" @tap="goToSearch">
+        <text class="search-icon">🔍</text>
+        <text class="search-placeholder">搜索目的地、攻略</text>
+      </view>
+    </view>
+    
+    <!-- 轮播图 -->
+    <view class="banner-container">
+      <swiper 
+        class="banner-swiper" 
+        indicator-dots 
+        autoplay 
+        circular 
+        interval="3000"
+        indicator-color="rgba(255,255,255,0.5)"
+        indicator-active-color="#ffffff"
+      >
+        <swiper-item 
+          v-for="(item, index) in bannerList" 
+          :key="index"
+          @tap="onBannerTap(item)"
+        >
+          <image 
+            class="banner-image" 
+            :src="item.imageUrl" 
+            mode="aspectFill"
+          />
+          <view class="banner-content">
+            <text class="banner-title">{{ item.title }}</text>
+            <text class="banner-subtitle">{{ item.subtitle }}</text>
+          </view>
+        </swiper-item>
+      </swiper>
+    </view>
+    
+    <!-- 功能入口 -->
+    <view class="feature-container">
+      <view 
+        class="feature-item" 
+        v-for="(item, index) in featureList" 
+        :key="index"
+        @tap="onFeatureTap(item)"
+      >
+        <view class="feature-icon">
+          <text>{{ item.icon }}</text>
+        </view>
+        <text class="feature-title">{{ item.title }}</text>
+      </view>
+    </view>
+    
+    <!-- 热门攻略 -->
+    <view class="section-container">
+      <view class="section-header">
+        <text class="section-title">热门攻略</text>
+        <text class="section-more" @tap="goToGuideList">查看更多</text>
+      </view>
+      <view class="guide-list">
+        <view 
+          class="guide-item" 
+          v-for="(item, index) in guideList" 
+          :key="index"
+          @tap="goToGuideDetail(item.id)"
+        >
+          <image 
+            class="guide-image" 
+            :src="item.coverImage" 
+            mode="aspectFill"
+          />
+          <view class="guide-content">
+            <text class="guide-title">{{ item.title }}</text>
+            <text class="guide-desc">{{ item.description }}</text>
+            <view class="guide-meta">
+              <text class="guide-destination">{{ item.destination }}</text>
+              <text class="guide-days">{{ item.days }}天</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 推荐目的地 -->
+    <view class="section-container">
+      <view class="section-header">
+        <text class="section-title">推荐目的地</text>
+        <text class="section-more" @tap="goToDestinationList">查看更多</text>
+      </view>
+      <view class="destination-grid">
+        <view 
+          class="destination-item" 
+          v-for="(item, index) in destinationList" 
+          :key="index"
+          @tap="goToDestinationDetail(item.id)"
+        >
+          <image 
+            class="destination-image" 
+            :src="item.coverImage" 
+            mode="aspectFill"
+          />
+          <view class="destination-overlay">
+            <text class="destination-name">{{ item.name }}</text>
+            <text class="destination-desc">{{ item.description }}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import wepy from '@wepy/core';
+
+wepy.page({
+  data: {
+    bannerList: [
+      {
+        id: 1,
+        title: '春日赏花',
+        subtitle: '探索最美花海',
+        imageUrl: 'https://picsum.photos/seed/banner1/750/300.jpg',
+        link: ''
+      },
+      {
+        id: 2,
+        title: '海岛度假',
+        subtitle: '享受阳光沙滩',
+        imageUrl: 'https://picsum.photos/seed/banner2/750/300.jpg',
+        link: ''
+      },
+      {
+        id: 3,
+        title: '古镇漫步',
+        subtitle: '感受历史文化',
+        imageUrl: 'https://picsum.photos/seed/banner3/750/300.jpg',
+        link: ''
+      }
+    ],
+    featureList: [
+      {
+        id: 1,
+        title: '智能攻略',
+        icon: '🧭',
+        path: '/pages/generate/index'
+      },
+      {
+        id: 2,
+        title: '景点推荐',
+        icon: '🏞️',
+        path: '/pages/attractions/index'
+      },
+      {
+        id: 3,
+        title: '美食探索',
+        icon: '🍜',
+        path: '/pages/food/index'
+      },
+      {
+        id: 4,
+        title: '行程规划',
+        icon: '📅',
+        path: '/pages/plan/index'
+      }
+    ],
+    guideList: [
+      {
+        id: 1,
+        title: '北京三日游完美攻略',
+        description: '故宫、长城、颐和园一网打尽',
+        coverImage: 'https://picsum.photos/seed/guide1/200/150.jpg',
+        destination: '北京',
+        days: 3
+      },
+      {
+        id: 2,
+        title: '上海周末游指南',
+        description: '外滩、迪士尼、城隍庙必打卡',
+        coverImage: 'https://picsum.photos/seed/guide2/200/150.jpg',
+        destination: '上海',
+        days: 2
+      },
+      {
+        id: 3,
+        title: '成都美食之旅',
+        description: '火锅、串串、小吃吃到爽',
+        coverImage: 'https://picsum.photos/seed/guide3/200/150.jpg',
+        destination: '成都',
+        days: 4
+      }
+    ],
+    destinationList: [
+      {
+        id: 1,
+        name: '杭州',
+        description: '人间天堂',
+        coverImage: 'https://picsum.photos/seed/dest1/350/200.jpg'
+      },
+      {
+        id: 2,
+        name: '西安',
+        description: '千年古都',
+        coverImage: 'https://picsum.photos/seed/dest2/350/200.jpg'
+      },
+      {
+        id: 3,
+        name: '厦门',
+        description: '海上花园',
+        coverImage: 'https://picsum.photos/seed/dest3/350/200.jpg'
+      },
+      {
+        id: 4,
+        name: '丽江',
+        description: '浪漫古城',
+        coverImage: 'https://picsum.photos/seed/dest4/350/200.jpg'
+      }
+    ]
+  },
+  
+  onLoad() {
+    this.loadPageData();
+  },
+  
+  onShow() {
+    // 页面显示时刷新数据
+  },
+  
+  onPullDownRefresh() {
+    this.loadPageData().then(() => {
+      wx.stopPullDownRefresh();
+    });
+  },
+  
+  onReachBottom() {
+    // 加载更多数据
+  },
+  
+  methods: {
+    /**
+     * 加载页面数据
+     */
+    async loadPageData() {
+      try {
+        // 这里可以调用API获取数据
+        // const res = await api.getHomeData();
+        // this.bannerList = res.data.banners;
+        // this.guideList = res.data.guides;
+        // this.destinationList = res.data.destinations;
+      } catch (error) {
+        console.error('加载页面数据失败:', error);
+      }
+    },
+    
+    /**
+     * 轮播图点击
+     */
+    onBannerTap(item: any) {
+      if (item.link) {
+        wx.navigateTo({
+          url: item.link
+        });
+      }
+    },
+    
+    /**
+     * 功能入口点击
+     */
+    onFeatureTap(item: any) {
+      wx.navigateTo({
+        url: item.path
+      });
+    },
+    
+    /**
+     * 跳转到搜索页
+     */
+    goToSearch() {
+      wx.navigateTo({
+        url: '/pages/search/index'
+      });
+    },
+    
+    /**
+     * 跳转到攻略列表
+     */
+    goToGuideList() {
+      wx.navigateTo({
+        url: '/pages/guide-list/index'
+      });
+    },
+    
+    /**
+     * 跳转到攻略详情
+     */
+    goToGuideDetail(id: number) {
+      wx.navigateTo({
+        url: `/pages/guide-detail/index?id=${id}`
+      });
+    },
+    
+    /**
+     * 跳转到目的地列表
+     */
+    goToDestinationList() {
+      wx.navigateTo({
+        url: '/pages/destination-list/index'
+      });
+    },
+    
+    /**
+     * 跳转到目的地详情
+     */
+    goToDestinationDetail(id: number) {
+      wx.navigateTo({
+        url: `/pages/destination-detail/index?id=${id}`
+      });
+    }
+  }
+});
+</script>
+
+<style lang="scss" src="@/assets/styles/index.scss" />
+
+<style lang="scss">
+.index-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.search-container {
+  padding: 20rpx;
+  background-color: #ffffff;
+  
+  .search-box {
+    display: flex;
+    align-items: center;
+    height: 72rpx;
+    padding: 0 24rpx;
+    background-color: #f5f5f5;
+    border-radius: 36rpx;
+    
+    .search-icon {
+      margin-right: 16rpx;
+      font-size: 32rpx;
+      color: #999;
+    }
+    
+    .search-placeholder {
+      font-size: 28rpx;
+      color: #999;
+    }
+  }
+}
+
+.banner-container {
+  height: 300rpx;
+  margin-bottom: 20rpx;
+  
+  .banner-swiper {
+    height: 100%;
+  }
+  
+  .banner-image {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .banner-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30rpx;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+    
+    .banner-title {
+      display: block;
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 8rpx;
+    }
+    
+    .banner-subtitle {
+      font-size: 24rpx;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+.feature-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 30rpx 20rpx;
+  background-color: #ffffff;
+  margin-bottom: 20rpx;
+  
+  .feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .feature-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80rpx;
+      height: 80rpx;
+      margin-bottom: 16rpx;
+      border-radius: 50%;
+      background-color: rgba(0, 122, 255, 0.1);
+      
+      text {
+        font-size: 40rpx;
+      }
+    }
+    
+    .feature-title {
+      font-size: 24rpx;
+      color: #333;
+    }
+  }
+}
+
+.section-container {
+  margin-bottom: 20rpx;
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20rpx;
+    
+    .section-title {
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .section-more {
+      font-size: 24rpx;
+      color: #007aff;
+    }
+  }
+}
+
+.guide-list {
+  padding: 0 20rpx;
+  
+  .guide-item {
+    display: flex;
+    margin-bottom: 20rpx;
+    padding: 20rpx;
+    background-color: #ffffff;
+    border-radius: 16rpx;
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+    
+    .guide-image {
+      width: 200rpx;
+      height: 150rpx;
+      margin-right: 20rpx;
+      border-radius: 12rpx;
+    }
+    
+    .guide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      
+      .guide-title {
+        font-size: 28rpx;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8rpx;
+      }
+      
+      .guide-desc {
+        font-size: 24rpx;
+        color: #666;
+        margin-bottom: 16rpx;
+      }
+      
+      .guide-meta {
+        display: flex;
+        justify-content: space-between;
+        
+        .guide-destination {
+          font-size: 24rpx;
+          color: #007aff;
+        }
+        
+        .guide-days {
+          font-size: 24rpx;
+          color: #999;
+        }
+      }
+    }
+  }
+}
+
+.destination-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  padding: 0 20rpx;
+  
+  .destination-item {
+    position: relative;
+    height: 200rpx;
+    border-radius: 16rpx;
+    overflow: hidden;
+    
+    .destination-image {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .destination-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20rpx;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+      
+      .destination-name {
+        display: block;
+        font-size: 28rpx;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 4rpx;
+      }
+      
+      .destination-desc {
+        font-size: 22rpx;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+}
+</style>

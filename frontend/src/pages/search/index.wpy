@@ -1,0 +1,665 @@
+<template>
+  <view class="search-page">
+    <!-- 搜索栏 -->
+    <view class="search-container">
+      <view class="search-input-wrapper">
+        <input 
+          class="search-input" 
+          v-model="searchKeyword" 
+          placeholder="搜索目的地、攻略、景点"
+          confirm-type="search"
+          @confirm="onSearch"
+          @input="onInput"
+        />
+        <view class="search-clear" v-if="searchKeyword" @tap="clearSearch">
+          <text class="clear-icon">×</text>
+        </view>
+      </view>
+      <view class="search-cancel" @tap="goBack">取消</view>
+    </view>
+    
+    <!-- 搜索历史 -->
+    <view class="history-container" v-if="!searchKeyword && searchHistory.length">
+      <view class="history-header">
+        <text class="history-title">搜索历史</text>
+        <text class="history-clear" @tap="clearHistory">清空</text>
+      </view>
+      <view class="history-list">
+        <view 
+          class="history-item" 
+          v-for="(item, index) in searchHistory" 
+          :key="index"
+          @tap="onHistoryTap(item)"
+        >
+          <text class="history-text">{{ item }}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 热门搜索 -->
+    <view class="hot-container" v-if="!searchKeyword">
+      <view class="hot-header">
+        <text class="hot-title">热门搜索</text>
+      </view>
+      <view class="hot-list">
+        <view 
+          class="hot-item" 
+          v-for="(item, index) in hotSearchList" 
+          :key="index"
+          @tap="onHotTap(item)"
+        >
+          <text class="hot-text">{{ item }}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 搜索结果 -->
+    <view class="result-container" v-if="searchKeyword">
+      <!-- 分类切换 -->
+      <view class="tab-container">
+        <view 
+          class="tab-item" 
+          v-for="(tab, index) in tabList" 
+          :key="index"
+          :class="{ active: currentTab === index }"
+          @tap="switchTab(index)"
+        >
+          <text class="tab-text">{{ tab.name }}</text>
+        </view>
+      </view>
+      
+      <!-- 攻略结果 -->
+      <view class="guide-result" v-if="currentTab === 0">
+        <view 
+          class="guide-item" 
+          v-for="(item, index) in guideResults" 
+          :key="index"
+          @tap="goToGuideDetail(item.id)"
+        >
+          <image 
+            class="guide-image" 
+            :src="item.coverImage" 
+            mode="aspectFill"
+          />
+          <view class="guide-content">
+            <text class="guide-title">{{ item.title }}</text>
+            <text class="guide-desc">{{ item.description }}</text>
+            <view class="guide-meta">
+              <text class="guide-destination">{{ item.destination }}</text>
+              <text class="guide-days">{{ item.days }}天</text>
+            </view>
+          </view>
+        </view>
+        <view class="no-result" v-if="!guideResults.length && !loading">
+          <text class="no-result-text">暂无相关攻略</text>
+        </view>
+        <view class="loading" v-if="loading">
+          <text class="loading-text">加载中...</text>
+        </view>
+      </view>
+      
+      <!-- 目的地结果 -->
+      <view class="destination-result" v-if="currentTab === 1">
+        <view 
+          class="destination-item" 
+          v-for="(item, index) in destinationResults" 
+          :key="index"
+          @tap="goToDestinationDetail(item.id)"
+        >
+          <image 
+            class="destination-image" 
+            :src="item.coverImage" 
+            mode="aspectFill"
+          />
+          <view class="destination-content">
+            <text class="destination-name">{{ item.name }}</text>
+            <text class="destination-desc">{{ item.description }}</text>
+            <view class="destination-meta">
+              <text class="destination-count">{{ item.guideCount }}个攻略</text>
+              <text class="destination-rating">⭐ {{ item.rating }}</text>
+            </view>
+          </view>
+        </view>
+        <view class="no-result" v-if="!destinationResults.length && !loading">
+          <text class="no-result-text">暂无相关目的地</text>
+        </view>
+        <view class="loading" v-if="loading">
+          <text class="loading-text">加载中...</text>
+        </view>
+      </view>
+      
+      <!-- 景点结果 -->
+      <view class="attraction-result" v-if="currentTab === 2">
+        <view 
+          class="attraction-item" 
+          v-for="(item, index) in attractionResults" 
+          :key="index"
+          @tap="goToAttractionDetail(item.id)"
+        >
+          <image 
+            class="attraction-image" 
+            :src="item.coverImage" 
+            mode="aspectFill"
+          />
+          <view class="attraction-content">
+            <text class="attraction-name">{{ item.name }}</text>
+            <text class="attraction-desc">{{ item.description }}</text>
+            <view class="attraction-meta">
+              <text class="attraction-location">📍 {{ item.location }}</text>
+              <text class="attraction-rating">⭐ {{ item.rating }}</text>
+            </view>
+          </view>
+        </view>
+        <view class="no-result" v-if="!attractionResults.length && !loading">
+          <text class="no-result-text">暂无相关景点</text>
+        </view>
+        <view class="loading" v-if="loading">
+          <text class="loading-text">加载中...</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import wepy from '@wepy/core';
+
+wepy.page({
+  data: {
+    searchKeyword: '',
+    currentTab: 0,
+    loading: false,
+    searchHistory: [
+      '北京',
+      '上海',
+      '成都',
+      '西安',
+      '杭州'
+    ],
+    hotSearchList: [
+      '五一去哪玩',
+      '亲子游',
+      '美食攻略',
+      '古镇游',
+      '海岛度假',
+      '自驾游',
+      '摄影圣地',
+      '网红打卡地'
+    ],
+    tabList: [
+      { id: 0, name: '攻略' },
+      { id: 1, name: '目的地' },
+      { id: 2, name: '景点' }
+    ],
+    guideResults: [],
+    destinationResults: [],
+    attractionResults: []
+  },
+  
+  onLoad() {
+    // 加载搜索历史
+    this.loadSearchHistory();
+  },
+  
+  methods: {
+    /**
+     * 加载搜索历史
+     */
+    loadSearchHistory() {
+      try {
+        const history = wx.getStorageSync('searchHistory');
+        if (history) {
+          this.searchHistory = JSON.parse(history);
+        }
+      } catch (error) {
+        console.error('加载搜索历史失败:', error);
+      }
+    },
+    
+    /**
+     * 保存搜索历史
+     */
+    saveSearchHistory(keyword: string) {
+      try {
+        let history = this.searchHistory.filter(item => item !== keyword);
+        history.unshift(keyword);
+        history = history.slice(0, 10); // 最多保存10条
+        this.searchHistory = history;
+        wx.setStorageSync('searchHistory', JSON.stringify(history));
+      } catch (error) {
+        console.error('保存搜索历史失败:', error);
+      }
+    },
+    
+    /**
+     * 输入事件
+     */
+    onInput(e: any) {
+      this.searchKeyword = e.detail.value;
+      if (this.searchKeyword) {
+        // 可以在这里实现实时搜索建议
+      }
+    },
+    
+    /**
+     * 搜索
+     */
+    onSearch() {
+      if (!this.searchKeyword.trim()) {
+        return;
+      }
+      
+      this.saveSearchHistory(this.searchKeyword);
+      this.searchData();
+    },
+    
+    /**
+     * 搜索数据
+     */
+    async searchData() {
+      if (this.loading) {
+        return;
+      }
+      
+      this.loading = true;
+      
+      try {
+        // 根据当前选中的标签页搜索不同类型的数据
+        switch (this.currentTab) {
+          case 0: // 攻略
+            await this.searchGuides();
+            break;
+          case 1: // 目的地
+            await this.searchDestinations();
+            break;
+          case 2: // 景点
+            await this.searchAttractions();
+            break;
+        }
+      } catch (error) {
+        console.error('搜索失败:', error);
+        wx.showToast({
+          title: '搜索失败',
+          icon: 'none'
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    /**
+     * 搜索攻略
+     */
+    async searchGuides() {
+      // 这里可以调用API搜索攻略
+      // const res = await api.searchGuides(this.searchKeyword);
+      // this.guideResults = res.data;
+      
+      // 模拟数据
+      this.guideResults = [
+        {
+          id: 1,
+          title: `${this.searchKeyword}三日游完美攻略`,
+          description: `探索${this.searchKeyword}的必去景点和美食`,
+          coverImage: 'https://picsum.photos/seed/guide1/200/150.jpg',
+          destination: this.searchKeyword,
+          days: 3
+        },
+        {
+          id: 2,
+          title: `${this.searchKeyword}周末游指南`,
+          description: `${this.searchKeyword}两日游精华路线`,
+          coverImage: 'https://picsum.photos/seed/guide2/200/150.jpg',
+          destination: this.searchKeyword,
+          days: 2
+        }
+      ];
+    },
+    
+    /**
+     * 搜索目的地
+     */
+    async searchDestinations() {
+      // 这里可以调用API搜索目的地
+      // const res = await api.searchDestinations(this.searchKeyword);
+      // this.destinationResults = res.data;
+      
+      // 模拟数据
+      this.destinationResults = [
+        {
+          id: 1,
+          name: this.searchKeyword,
+          description: '热门旅游目的地',
+          coverImage: 'https://picsum.photos/seed/dest1/200/150.jpg',
+          guideCount: 25,
+          rating: 4.8
+        }
+      ];
+    },
+    
+    /**
+     * 搜索景点
+     */
+    async searchAttractions() {
+      // 这里可以调用API搜索景点
+      // const res = await api.searchAttractions(this.searchKeyword);
+      // this.attractionResults = res.data;
+      
+      // 模拟数据
+      this.attractionResults = [
+        {
+          id: 1,
+          name: `${this.searchKeyword}景点`,
+          description: '必去景点推荐',
+          coverImage: 'https://picsum.photos/seed/attraction1/200/150.jpg',
+          location: this.searchKeyword,
+          rating: 4.7
+        }
+      ];
+    },
+    
+    /**
+     * 清空搜索
+     */
+    clearSearch() {
+      this.searchKeyword = '';
+      this.guideResults = [];
+      this.destinationResults = [];
+      this.attractionResults = [];
+    },
+    
+    /**
+     * 清空历史
+     */
+    clearHistory() {
+      this.searchHistory = [];
+      wx.removeStorageSync('searchHistory');
+    },
+    
+    /**
+     * 历史记录点击
+     */
+    onHistoryTap(keyword: string) {
+      this.searchKeyword = keyword;
+      this.onSearch();
+    },
+    
+    /**
+     * 热门搜索点击
+     */
+    onHotTap(keyword: string) {
+      this.searchKeyword = keyword;
+      this.onSearch();
+    },
+    
+    /**
+     * 切换标签页
+     */
+    switchTab(index: number) {
+      if (this.currentTab === index) {
+        return;
+      }
+      
+      this.currentTab = index;
+      if (this.searchKeyword) {
+        this.searchData();
+      }
+    },
+    
+    /**
+     * 返回上一页
+     */
+    goBack() {
+      wx.navigateBack();
+    },
+    
+    /**
+     * 跳转到攻略详情
+     */
+    goToGuideDetail(id: number) {
+      wx.navigateTo({
+        url: `/pages/guide-detail/index?id=${id}`
+      });
+    },
+    
+    /**
+     * 跳转到目的地详情
+     */
+    goToDestinationDetail(id: number) {
+      wx.navigateTo({
+        url: `/pages/destination-detail/index?id=${id}`
+      });
+    },
+    
+    /**
+     * 跳转到景点详情
+     */
+    goToAttractionDetail(id: number) {
+      wx.navigateTo({
+        url: `/pages/attraction-detail/index?id=${id}`
+      });
+    }
+  }
+});
+</script>
+
+<style lang="scss" src="@/assets/styles/index.scss" />
+
+<style lang="scss">
+.search-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #ffffff;
+  
+  .search-input-wrapper {
+    flex: 1;
+    position: relative;
+    
+    .search-input {
+      height: 72rpx;
+      padding: 0 80rpx 0 24rpx;
+      background-color: #f5f5f5;
+      border-radius: 36rpx;
+      font-size: 28rpx;
+    }
+    
+    .search-clear {
+      position: absolute;
+      right: 20rpx;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40rpx;
+      height: 40rpx;
+      line-height: 40rpx;
+      text-align: center;
+      background-color: #ccc;
+      border-radius: 50%;
+      
+      .clear-icon {
+        font-size: 24rpx;
+        color: #fff;
+      }
+    }
+  }
+  
+  .search-cancel {
+    margin-left: 20rpx;
+    font-size: 28rpx;
+    color: #007aff;
+  }
+}
+
+.history-container, .hot-container {
+  margin-top: 20rpx;
+  padding: 30rpx;
+  background-color: #ffffff;
+  
+  .history-header, .hot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20rpx;
+    
+    .history-title, .hot-title {
+      font-size: 28rpx;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .history-clear {
+      font-size: 24rpx;
+      color: #999;
+    }
+  }
+  
+  .history-list, .hot-list {
+    display: flex;
+    flex-wrap: wrap;
+    
+    .history-item, .hot-item {
+      margin-right: 20rpx;
+      margin-bottom: 20rpx;
+      padding: 10rpx 20rpx;
+      background-color: #f5f5f5;
+      border-radius: 30rpx;
+      
+      .history-text, .hot-text {
+        font-size: 24rpx;
+        color: #333;
+      }
+    }
+    
+    .hot-item {
+      background-color: rgba(0, 122, 255, 0.1);
+      
+      .hot-text {
+        color: #007aff;
+      }
+    }
+  }
+}
+
+.result-container {
+  margin-top: 20rpx;
+  background-color: #ffffff;
+}
+
+.tab-container {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+  
+  .tab-item {
+    flex: 1;
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: center;
+    
+    &.active {
+      position: relative;
+      
+      .tab-text {
+        color: #007aff;
+        font-weight: bold;
+      }
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60rpx;
+        height: 4rpx;
+        background-color: #007aff;
+        border-radius: 2rpx;
+      }
+    }
+    
+    .tab-text {
+      font-size: 28rpx;
+      color: #666;
+    }
+  }
+}
+
+.guide-result, .destination-result, .attraction-result {
+  padding: 20rpx;
+  
+  .guide-item, .destination-item, .attraction-item {
+    display: flex;
+    padding: 20rpx;
+    margin-bottom: 20rpx;
+    background-color: #ffffff;
+    border-radius: 16rpx;
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+    
+    .guide-image, .destination-image, .attraction-image {
+      width: 200rpx;
+      height: 150rpx;
+      margin-right: 20rpx;
+      border-radius: 12rpx;
+    }
+    
+    .guide-content, .destination-content, .attraction-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      
+      .guide-title, .destination-name, .attraction-name {
+        font-size: 28rpx;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 8rpx;
+      }
+      
+      .guide-desc, .destination-desc, .attraction-desc {
+        font-size: 24rpx;
+        color: #666;
+        margin-bottom: 16rpx;
+      }
+      
+      .guide-meta, .destination-meta, .attraction-meta {
+        display: flex;
+        justify-content: space-between;
+        
+        .guide-destination, .guide-days, .destination-count, .attraction-location {
+          font-size: 24rpx;
+          color: #007aff;
+        }
+        
+        .destination-rating, .attraction-rating {
+          font-size: 24rpx;
+          color: #ff9500;
+        }
+      }
+    }
+  }
+}
+
+.no-result {
+  padding: 100rpx 0;
+  text-align: center;
+  
+  .no-result-text {
+    font-size: 28rpx;
+    color: #999;
+  }
+}
+
+.loading {
+  padding: 50rpx 0;
+  text-align: center;
+  
+  .loading-text {
+    font-size: 28rpx;
+    color: #999;
+  }
+}
+</style>

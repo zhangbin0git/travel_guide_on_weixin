@@ -1,0 +1,461 @@
+<template>
+  <view class="user-page">
+    <!-- 用户信息 -->
+    <view class="user-header">
+      <view class="user-avatar" @tap="goToProfile">
+        <image 
+          class="avatar-image" 
+          :src="userInfo.avatarUrl || '/assets/images/default-avatar.png'" 
+          mode="aspectFill"
+        />
+      </view>
+      <view class="user-info" @tap="goToProfile">
+        <text class="user-name" v-if="userInfo.nickName">{{ userInfo.nickName }}</text>
+        <text class="user-name" v-else>点击登录</text>
+        <text class="user-desc" v-if="userInfo.nickName">{{ userInfo.signature || '这个人很懒，什么都没留下' }}</text>
+      </view>
+      <view class="user-setting" @tap="goToSettings">
+        <text class="setting-icon">⚙️</text>
+      </view>
+    </view>
+    
+    <!-- 用户统计 -->
+    <view class="stats-container" v-if="userInfo.nickName">
+      <view class="stats-item" @tap="goToMyGuides">
+        <text class="stats-number">{{ userInfo.guideCount || 0 }}</text>
+        <text class="stats-label">攻略</text>
+      </view>
+      <view class="stats-item" @tap="goToMyFavorites">
+        <text class="stats-number">{{ userInfo.favoriteCount || 0 }}</text>
+        <text class="stats-label">收藏</text>
+      </view>
+      <view class="stats-item" @tap="goToMyPlans">
+        <text class="stats-number">{{ userInfo.planCount || 0 }}</text>
+        <text class="stats-label">计划</text>
+      </view>
+      <view class="stats-item" @tap="goToMyFootprints">
+        <text class="stats-number">{{ userInfo.footprintCount || 0 }}</text>
+        <text class="stats-label">足迹</text>
+      </view>
+    </view>
+    
+    <!-- 登录提示 -->
+    <view class="login-tip" v-else @tap="goToLogin">
+      <text class="login-text">登录后查看更多内容</text>
+      <text class="login-btn">立即登录</text>
+    </view>
+    
+    <!-- 功能菜单 -->
+    <view class="menu-container">
+      <view class="menu-group">
+        <view class="menu-item" @tap="goToMyGuides">
+          <view class="menu-left">
+            <text class="menu-icon">📝</text>
+            <text class="menu-title">我的攻略</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-count">{{ userInfo.guideCount || 0 }}</text>
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+        <view class="menu-item" @tap="goToMyFavorites">
+          <view class="menu-left">
+            <text class="menu-icon">❤️</text>
+            <text class="menu-title">我的收藏</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-count">{{ userInfo.favoriteCount || 0 }}</text>
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+        <view class="menu-item" @tap="goToMyPlans">
+          <view class="menu-left">
+            <text class="menu-icon">📅</text>
+            <text class="menu-title">我的计划</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-count">{{ userInfo.planCount || 0 }}</text>
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+        <view class="menu-item" @tap="goToMyFootprints">
+          <view class="menu-left">
+            <text class="menu-icon">👣</text>
+            <text class="menu-title">我的足迹</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-count">{{ userInfo.footprintCount || 0 }}</text>
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="menu-group">
+        <view class="menu-item" @tap="goToHistory">
+          <view class="menu-left">
+            <text class="menu-icon">🕐</text>
+            <text class="menu-title">浏览历史</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+        <view class="menu-item" @tap="goToOffline">
+          <view class="menu-left">
+            <text class="menu-icon">💾</text>
+            <text class="menu-title">离线下载</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="menu-group">
+        <view class="menu-item" @tap="goToFeedback">
+          <view class="menu-left">
+            <text class="menu-icon">💬</text>
+            <text class="menu-title">意见反馈</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+        <view class="menu-item" @tap="goToAbout">
+          <view class="menu-left">
+            <text class="menu-icon">ℹ️</text>
+            <text class="menu-title">关于我们</text>
+          </view>
+          <view class="menu-right">
+            <text class="menu-arrow">></text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script lang="ts">
+import wepy from '@wepy/core';
+
+wepy.page({
+  data: {
+    userInfo: {
+      nickName: '',
+      avatarUrl: '',
+      signature: '',
+      guideCount: 0,
+      favoriteCount: 0,
+      planCount: 0,
+      footprintCount: 0
+    },
+    hasLogin: false
+  },
+  
+  onLoad() {
+    this.checkLoginStatus();
+  },
+  
+  onShow() {
+    // 每次页面显示时检查登录状态
+    this.checkLoginStatus();
+  },
+  
+  methods: {
+    /**
+     * 检查登录状态
+     */
+    checkLoginStatus() {
+      try {
+        const userInfo = wx.getStorageSync('userInfo');
+        if (userInfo) {
+          this.userInfo = JSON.parse(userInfo);
+          this.hasLogin = true;
+        } else {
+          this.hasLogin = false;
+        }
+      } catch (error) {
+        console.error('检查登录状态失败:', error);
+        this.hasLogin = false;
+      }
+    },
+    
+    /**
+     * 跳转到登录页
+     */
+    goToLogin() {
+      wx.navigateTo({
+        url: '/pages/login/index'
+      });
+    },
+    
+    /**
+     * 跳转到个人资料页
+     */
+    goToProfile() {
+      if (!this.hasLogin) {
+        this.goToLogin();
+        return;
+      }
+      
+      wx.navigateTo({
+        url: '/pages/profile/index'
+      });
+    },
+    
+    /**
+     * 跳转到设置页
+     */
+    goToSettings() {
+      wx.navigateTo({
+        url: '/pages/settings/index'
+      });
+    },
+    
+    /**
+     * 跳转到我的攻略
+     */
+    goToMyGuides() {
+      if (!this.hasLogin) {
+        this.goToLogin();
+        return;
+      }
+      
+      wx.navigateTo({
+        url: '/pages/my-guides/index'
+      });
+    },
+    
+    /**
+     * 跳转到我的收藏
+     */
+    goToMyFavorites() {
+      if (!this.hasLogin) {
+        this.goToLogin();
+        return;
+      }
+      
+      wx.navigateTo({
+        url: '/pages/my-favorites/index'
+      });
+    },
+    
+    /**
+     * 跳转到我的计划
+     */
+    goToMyPlans() {
+      if (!this.hasLogin) {
+        this.goToLogin();
+        return;
+      }
+      
+      wx.navigateTo({
+        url: '/pages/my-plans/index'
+      });
+    },
+    
+    /**
+     * 跳转到我的足迹
+     */
+    goToMyFootprints() {
+      if (!this.hasLogin) {
+        this.goToLogin();
+        return;
+      }
+      
+      wx.navigateTo({
+        url: '/pages/my-footprints/index'
+      });
+    },
+    
+    /**
+     * 跳转到浏览历史
+     */
+    goToHistory() {
+      wx.navigateTo({
+        url: '/pages/history/index'
+      });
+    },
+    
+    /**
+     * 跳转到离线下载
+     */
+    goToOffline() {
+      wx.navigateTo({
+        url: '/pages/offline/index'
+      });
+    },
+    
+    /**
+     * 跳转到意见反馈
+     */
+    goToFeedback() {
+      wx.navigateTo({
+        url: '/pages/feedback/index'
+      });
+    },
+    
+    /**
+     * 跳转到关于我们
+     */
+    goToAbout() {
+      wx.navigateTo({
+        url: '/pages/about/index'
+      });
+    }
+  }
+});
+</script>
+
+<style lang="scss" src="@/assets/styles/index.scss" />
+
+<style lang="scss">
+.user-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  background-color: #ffffff;
+  
+  .user-avatar {
+    width: 120rpx;
+    height: 120rpx;
+    margin-right: 30rpx;
+    
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 60rpx;
+    }
+  }
+  
+  .user-info {
+    flex: 1;
+    
+    .user-name {
+      display: block;
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10rpx;
+    }
+    
+    .user-desc {
+      font-size: 24rpx;
+      color: #999;
+    }
+  }
+  
+  .user-setting {
+    .setting-icon {
+      font-size: 40rpx;
+    }
+  }
+}
+
+.stats-container {
+  display: flex;
+  padding: 30rpx 0;
+  background-color: #ffffff;
+  border-top: 1rpx solid #f5f5f5;
+  
+  .stats-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    .stats-number {
+      font-size: 36rpx;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10rpx;
+    }
+    
+    .stats-label {
+      font-size: 24rpx;
+      color: #666;
+    }
+  }
+}
+
+.login-tip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-top: 1rpx solid #f5f5f5;
+  
+  .login-text {
+    font-size: 28rpx;
+    color: #666;
+  }
+  
+  .login-btn {
+    padding: 10rpx 30rpx;
+    font-size: 24rpx;
+    color: #007aff;
+    background-color: rgba(0, 122, 255, 0.1);
+    border-radius: 30rpx;
+  }
+}
+
+.menu-container {
+  margin-top: 20rpx;
+}
+
+.menu-group {
+  margin-bottom: 20rpx;
+  background-color: #ffffff;
+  
+  .menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30rpx;
+    border-bottom: 1rpx solid #f5f5f5;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .menu-left {
+      display: flex;
+      align-items: center;
+      
+      .menu-icon {
+        width: 40rpx;
+        height: 40rpx;
+        margin-right: 20rpx;
+        font-size: 32rpx;
+      }
+      
+      .menu-title {
+        font-size: 28rpx;
+        color: #333;
+      }
+    }
+    
+    .menu-right {
+      display: flex;
+      align-items: center;
+      
+      .menu-count {
+        margin-right: 10rpx;
+        font-size: 24rpx;
+        color: #999;
+      }
+      
+      .menu-arrow {
+        font-size: 24rpx;
+        color: #ccc;
+      }
+    }
+  }
+}
+</style>
