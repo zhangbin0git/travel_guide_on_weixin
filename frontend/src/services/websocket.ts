@@ -14,6 +14,26 @@ export enum SocketStatus {
   CLOSED = 3
 }
 
+// WebSocket消息类型枚举（与后端保持一致）
+export enum MessageType {
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+  GUIDE_REQUEST = 'guide_request',
+  GUIDE_UPDATE = 'guide_update',
+  GUIDE_COMPLETE = 'guide_complete',
+  ERROR = 'error',
+  PING = 'ping',
+  PONG = 'pong',
+}
+
+// WebSocket消息接口（与后端保持一致）
+export interface IWebSocketMessage {
+  type: MessageType;
+  data?: any;
+  timestamp: number;
+  id?: string;
+}
+
 // 当前连接状态
 let currentStatus: SocketStatus = SocketStatus.CLOSED;
 
@@ -23,19 +43,28 @@ const MAX_RECONNECT_COUNT = 5; // 最大重连次数
 let reconnectCount = 0;
 let reconnectTimer: number | null = null;
 
+// 心跳检测配置
+const HEARTBEAT_INTERVAL = 30000; // 心跳间隔
+let heartbeatTimer: number | null = null;
+
 // 消息监听器
-type MessageListener = (data: any) => void;
+type MessageListener = (message: IWebSocketMessage) => void;
 const messageListeners: MessageListener[] = [];
 
 // 状态监听器
 type StatusListener = (status: SocketStatus) => void;
 const statusListeners: StatusListener[] = [];
 
+// WebSocket服务器地址
+let serverUrl: string = '';
+
 /**
  * 初始化WebSocket连接
  * @param url WebSocket服务器地址
  */
 export function initWebSocket(url: string): void {
+  serverUrl = url;
+  
   if (socketTask) {
     socketTask.close();
   }
@@ -53,13 +82,33 @@ export function initWebSocket(url: string): void {
     currentStatus = SocketStatus.OPEN;
     reconnectCount = 0;
     notifyStatusListeners();
+    
+    // 启动心跳检测
+    startHeartbeat();
   });
 
   socketTask.onMessage((res) => {
     try {
-      const data = JSON.parse(res.data as string);
-      console.log('收到WebSocket消息:', data);
-      notifyMessageListeners(data);
+      // 尝试解析JSON消息
+      let message: IWebSocketMessage;
+      
+      if (typeof res.data === 'string') {
+        message = JSON.parse(res.data);
+      } else {
+        // 如果不是字符串，可能是直接发送的消息类型
+        message = {
+          type: res.data as MessageType,
+          timestamp: Date.now(),
+        };
+      }
+      
+      console.log('收到WebSocket消息:', message);
+      
+      // 处理特定类型的消息
+      handleSpecialMessage(message);
+      
+      // 通知所有消息监听器
+      notifyMessageListeners(message);
     } catch (error) {
       console.error('解析WebSocket消息失败:', error);
     }
@@ -69,6 +118,9 @@ export function initWebSocket(url: string): void {
     console.log('WebSocket连接已关闭');
     currentStatus = SocketStatus.CLOSED;
     notifyStatusListeners();
+    
+    // 停止心跳检测
+    stopHeartbeat();
     
     // 自动重连
     if (reconnectCount < MAX_RECONNECT_COUNT) {
@@ -88,19 +140,72 @@ export function initWebSocket(url: string): void {
 }
 
 /**
- * 发送WebSocket消息
- * @param data 要发送的数据
+ * 处理特定类型的消息
+ * @param message WebSocket消息
  */
-export function sendMessage(data: any): boolean {
+function handleSpecialMessage(message: IWebSocketMessage): void {
+  switch (message.type) {
+    case MessageType.PING:
+      // 收到PING，回复PONG
+      sendMessage(MessageType.PONG, { timestamp: Date.now() });
+      break;
+    case MessageType.PONG:
+      // 收到PONG，更新心跳状态
+      console.log('心跳响应正常');
+      break;
+    case MessageType.CONNECT:
+      console.log('连接确认消息:', message.data);
+      break;
+    case MessageType.ERROR:
+      console.error('服务器错误消息:', message.data);
+      break;
+  }
+}
+
+/**
+ * 启动心跳检测
+ */
+function startHeartbeat(): void {
+  stopHeartbeat(); // 先停止之前的心跳
+  
+  heartbeatTimer = setInterval(() => {
+    if (currentStatus === SocketStatus.OPEN) {
+      sendMessage(MessageType.PING, { timestamp: Date.now() });
+    }
+  }, HEARTBEAT_INTERVAL);
+}
+
+/**
+ * 停止心跳检测
+ */
+function stopHeartbeat(): void {
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+  }
+}
+
+/**
+ * 发送WebSocket消息
+ * @param type 消息类型
+ * @param data 消息数据
+ */
+export function sendMessage(type: MessageType, data?: any): boolean {
   if (currentStatus !== SocketStatus.OPEN || !socketTask) {
     console.error('WebSocket未连接，无法发送消息');
     return false;
   }
 
   try {
-    const message = typeof data === 'string' ? data : JSON.stringify(data);
+    const message: IWebSocketMessage = {
+      type,
+      data,
+      timestamp: Date.now(),
+      id: generateMessageId(),
+    };
+    
     socketTask.send({
-      data: message
+      data: JSON.stringify(message)
     });
     return true;
   } catch (error) {
@@ -110,14 +215,35 @@ export function sendMessage(data: any): boolean {
 }
 
 /**
+ * 生成消息ID
+ * @returns 消息ID
+ */
+function generateMessageId(): string {
+  return 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+/**
+ * 发送攻略生成请求
+ * @param requestData 请求数据
+ */
+export function sendGuideRequest(requestData: any): boolean {
+  return sendMessage(MessageType.GUIDE_REQUEST, requestData);
+}
+
+/**
  * 关闭WebSocket连接
  */
 export function closeWebSocket(): void {
+  // 停止重连定时器
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
   }
+  
+  // 停止心跳检测
+  stopHeartbeat();
 
+  // 关闭连接
   if (socketTask) {
     socketTask.close();
     socketTask = null;
@@ -175,10 +301,10 @@ export function removeStatusListener(listener: StatusListener): void {
 /**
  * 通知所有消息监听器
  */
-function notifyMessageListeners(data: any): void {
+function notifyMessageListeners(message: IWebSocketMessage): void {
   messageListeners.forEach(listener => {
     try {
-      listener(data);
+      listener(message);
     } catch (error) {
       console.error('消息监听器执行错误:', error);
     }

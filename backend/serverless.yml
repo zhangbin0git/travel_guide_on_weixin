@@ -1,0 +1,47 @@
+service: travel-guide-backend
+
+provider:
+  name: tencent
+  runtime: Nodejs16.15
+  region: ap-guangzhou
+  memorySize: 512
+  timeout: 30
+  environment:
+    variables:
+      NODE_ENV: production
+
+functions:
+  app:
+    handler: dist/server.startServer
+    events:
+      - apigw:
+          path: /
+          method: ANY
+          cors: true
+      - apigw:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+    websocketPort: 3001
+  dotenv:
+    path: .env
+
+package:
+  include:
+    - dist/**
+    - node_modules/**
+  exclude:
+    - .git/**
+    - src/**
+    - tsconfig.json
+    - .eslintrc.js
+    - package-lock.json
+    - README.md

@@ -1,0 +1,396 @@
+/**
+ * WebSocket测试页面
+ * 用于验证前后端WebSocket通信功能
+ */
+
+import { Component } from '@wepy/core';
+import { initWebSocket, closeWebSocket, sendMessage, addMessageListener, addStatusListener, SocketStatus, MessageType, sendGuideRequest, IWebSocketMessage } from '@/services/websocket';
+
+@Component({
+  template: `
+    <view class="websocket-test">
+      <view class="header">
+        <text class="title">WebSocket通信测试</text>
+      </view>
+      
+      <view class="status-section">
+        <text class="status-label">连接状态：</text>
+        <text class="status-value {{ statusClass }}">{{ statusText }}</text>
+      </view>
+      
+      <view class="control-section">
+        <button 
+          class="btn {{ isConnected ? 'btn-danger' : 'btn-primary' }}" 
+          bindtap="toggleConnection"
+        >
+          {{ isConnected ? '断开连接' : '连接服务器' }}
+        </button>
+        
+        <button 
+          class="btn btn-secondary" 
+          bindtap="sendPing"
+          disabled="{{ !isConnected }}"
+        >
+          发送心跳
+        </button>
+        
+        <button 
+          class="btn btn-secondary" 
+          bindtap="sendTestGuideRequest"
+          disabled="{{ !isConnected }}"
+        >
+          发送测试攻略请求
+        </button>
+      </view>
+      
+      <view class="message-section">
+        <view class="section-title">消息日志</view>
+        <scroll-view 
+          class="message-list" 
+          scroll-y="true" 
+          scroll-into-view="{{ lastMessageId }}"
+        >
+          <view 
+            wx:for="{{ messages }}" 
+            wx:key="id" 
+            id="message-{{ item.id }}"
+            class="message-item {{ item.type }}"
+          >
+            <text class="message-time">{{ item.time }}</text>
+            <text class="message-type">{{ item.type }}</text>
+            <text class="message-content">{{ item.content }}</text>
+          </view>
+        </scroll-view>
+        
+        <button 
+          class="btn btn-small" 
+          bindtap="clearMessages"
+        >
+          清空日志
+        </button>
+      </view>
+    </view>
+  `,
+  
+  style: `
+    .websocket-test {
+      padding: 20rpx;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30rpx;
+    }
+    
+    .title {
+      font-size: 36rpx;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .status-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30rpx;
+      padding: 20rpx;
+      background-color: #f5f5f5;
+      border-radius: 10rpx;
+    }
+    
+    .status-label {
+      font-size: 28rpx;
+      color: #666;
+    }
+    
+    .status-value {
+      font-size: 28rpx;
+      font-weight: bold;
+      margin-left: 10rpx;
+    }
+    
+    .status-connected {
+      color: #07c160;
+    }
+    
+    .status-connecting {
+      color: #ff9500;
+    }
+    
+    .status-disconnected {
+      color: #fa5151;
+    }
+    
+    .control-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20rpx;
+      margin-bottom: 30rpx;
+    }
+    
+    .btn {
+      flex: 1;
+      min-width: 200rpx;
+      height: 80rpx;
+      line-height: 80rpx;
+      text-align: center;
+      border-radius: 10rpx;
+      font-size: 28rpx;
+    }
+    
+    .btn-primary {
+      background-color: #007aff;
+      color: white;
+    }
+    
+    .btn-danger {
+      background-color: #fa5151;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: #34c759;
+      color: white;
+    }
+    
+    .btn-small {
+      height: 60rpx;
+      line-height: 60rpx;
+      font-size: 24rpx;
+      background-color: #8e8e93;
+      color: white;
+      margin-top: 20rpx;
+    }
+    
+    .message-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    
+    .section-title {
+      font-size: 30rpx;
+      font-weight: bold;
+      margin-bottom: 20rpx;
+      color: #333;
+    }
+    
+    .message-list {
+      flex: 1;
+      border: 1rpx solid #e5e5e5;
+      border-radius: 10rpx;
+      padding: 20rpx;
+      background-color: #f9f9f9;
+      min-height: 300rpx;
+    }
+    
+    .message-item {
+      margin-bottom: 20rpx;
+      padding: 15rpx;
+      border-radius: 8rpx;
+      background-color: white;
+    }
+    
+    .message-item.sent {
+      border-left: 6rpx solid #007aff;
+    }
+    
+    .message-item.received {
+      border-left: 6rpx solid #34c759;
+    }
+    
+    .message-item.error {
+      border-left: 6rpx solid #fa5151;
+    }
+    
+    .message-time {
+      display: block;
+      font-size: 22rpx;
+      color: #999;
+      margin-bottom: 5rpx;
+    }
+    
+    .message-type {
+      display: inline-block;
+      font-size: 24rpx;
+      font-weight: bold;
+      color: #333;
+      margin-right: 10rpx;
+      padding: 2rpx 8rpx;
+      background-color: #f0f0f0;
+      border-radius: 4rpx;
+    }
+    
+    .message-content {
+      font-size: 26rpx;
+      color: #333;
+      word-break: break-all;
+    }
+  `
+})
+
+export default class WebSocketTest extends wepy.page {
+  data = {
+    isConnected: false,
+    statusText: '未连接',
+    statusClass: 'status-disconnected',
+    messages: [],
+    lastMessageId: ''
+  };
+
+  // WebSocket服务器地址 - 在实际项目中应该从配置中获取
+  serverUrl = 'ws://localhost:3000/ws/guide';
+  
+  // 消息ID计数器
+  messageIdCounter = 0;
+
+  onLoad() {
+    // 添加状态监听器
+    addStatusListener(this.onSocketStatusChange.bind(this));
+    
+    // 添加消息监听器
+    addMessageListener(this.onSocketMessage.bind(this));
+  }
+
+  onUnload() {
+    // 页面卸载时关闭WebSocket连接
+    closeWebSocket();
+  }
+
+  /**
+   * 切换连接状态
+   */
+  toggleConnection() {
+    if (this.isConnected) {
+      closeWebSocket();
+    } else {
+      initWebSocket(this.serverUrl);
+    }
+  }
+
+  /**
+   * 发送心跳消息
+   */
+  sendPing() {
+    const success = sendMessage(MessageType.PING, { timestamp: Date.now() });
+    if (!success) {
+      this.addMessage('error', 'PING', '发送失败：WebSocket未连接');
+    }
+  }
+
+  /**
+   * 发送测试攻略请求
+   */
+  sendTestGuideRequest() {
+    const testData = {
+      destination: '北京',
+      duration: 3,
+      interests: ['历史文化', '美食'],
+      budget: '中等',
+      groupType: '情侣'
+    };
+    
+    const success = sendGuideRequest(testData);
+    if (!success) {
+      this.addMessage('error', 'GUIDE_REQUEST', '发送失败：WebSocket未连接');
+    }
+  }
+
+  /**
+   * 清空消息日志
+   */
+  clearMessages() {
+    this.setData({
+      messages: []
+    });
+  }
+
+  /**
+   * WebSocket状态变化回调
+   */
+  onSocketStatusChange(status: SocketStatus) {
+    let statusText, statusClass, isConnected;
+    
+    switch (status) {
+      case SocketStatus.CONNECTING:
+        statusText = '连接中...';
+        statusClass = 'status-connecting';
+        isConnected = false;
+        break;
+      case SocketStatus.OPEN:
+        statusText = '已连接';
+        statusClass = 'status-connected';
+        isConnected = true;
+        break;
+      case SocketStatus.CLOSING:
+        statusText = '断开中...';
+        statusClass = 'status-connecting';
+        isConnected = false;
+        break;
+      case SocketStatus.CLOSED:
+        statusText = '未连接';
+        statusClass = 'status-disconnected';
+        isConnected = false;
+        break;
+      default:
+        statusText = '未知状态';
+        statusClass = 'status-disconnected';
+        isConnected = false;
+    }
+    
+    this.setData({
+      isConnected,
+      statusText,
+      statusClass
+    });
+    
+    this.addMessage('system', 'STATUS', `状态变更为: ${statusText}`);
+  }
+
+  /**
+   * WebSocket消息接收回调
+   */
+  onSocketMessage(message: IWebSocketMessage) {
+    this.addMessage('received', message.type, JSON.stringify(message.data || {}));
+  }
+
+  /**
+   * 添加消息到日志
+   */
+  addMessage(type: string, messageType: string, content: string) {
+    const now = new Date();
+    const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+    
+    const messageId = `msg_${this.messageIdCounter++}`;
+    
+    const newMessage = {
+      id: messageId,
+      time,
+      type,
+      messageType,
+      content
+    };
+    
+    this.messages.push(newMessage);
+    
+    this.setData({
+      messages: this.messages,
+      lastMessageId: `message-${messageId}`
+    });
+  }
+
+  // 重写sendMessage方法以记录发送的消息
+  sendMessage(type: MessageType, data?: any): boolean {
+    const success = sendMessage(type, data);
+    if (success) {
+      this.addMessage('sent', type, JSON.stringify(data || {}));
+    } else {
+      this.addMessage('error', type, '发送失败：WebSocket未连接');
+    }
+    return success;
+  }
+}
