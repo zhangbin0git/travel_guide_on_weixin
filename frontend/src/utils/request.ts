@@ -4,46 +4,52 @@ import Taro from '@tarojs/taro'
 const BASE_URL = 'https://your-api-domain.com/api'
 
 // 请求拦截器
-const requestInterceptor = (chain) => {
+const requestInterceptor = (chain: { requestParams: Taro.request.Option }) => {
   const requestParams = chain.requestParams
   const { header } = requestParams
 
   // 添加token
   const token = Taro.getStorageSync('token')
   if (token) {
-    header.Authorization = `Bearer ${token}`
+    header!.Authorization = `Bearer ${token}`
   }
 
   // 添加公共参数
-  header['Content-Type'] = header['Content-Type'] || 'application/json'
+  header!['Content-Type'] = header!['Content-Type'] || 'application/json'
 
   return chain.proceed(requestParams)
 }
 
 // 响应拦截器
-const responseInterceptor = (chain) => {
+const responseInterceptor = (chain: {
+  response: Taro.request.SuccessCallbackResult
+}) => {
   const { statusCode, data } = chain.response
 
   // 处理HTTP状态码
   if (statusCode >= 200 && statusCode < 300) {
     // 处理业务状态码
-    if (data.code === 200) {
-      return data.data
-    } else if (data.code === 401) {
+    if ((data as { code: number }).code === 200) {
+      return (data as { data: unknown }).data
+    } else if ((data as { code: number }).code === 401) {
       // 未授权，跳转登录页
       Taro.navigateTo({ url: '/pages/login/index' })
-      return Promise.reject(new Error(data.message || '请先登录'))
+      return Promise.reject(
+        new Error((data as { message?: string }).message || '请先登录')
+      )
     } else {
       Taro.showToast({
-        title: data.message || '请求失败',
-        icon: 'none'
+        title: (data as { message?: string }).message || '请求失败',
+        icon: 'none',
       })
-      return Promise.reject(new Error(data.message || '请求失败'))
+      return Promise.reject(
+        new Error((data as { message?: string }).message || '请求失败')
+      )
     }
   } else {
     Taro.showToast({
       title: '网络错误',
-      icon: 'none'
+      icon: 'none',
     })
     return Promise.reject(new Error('网络错误'))
   }
@@ -58,43 +64,43 @@ Taro.addInterceptor(responseInterceptor)
 const request = (options: Taro.request.Option) => {
   return Taro.request({
     url: `${BASE_URL}${options.url}`,
-    ...options
+    ...options,
   })
 }
 
 // GET请求
-export const get = (url: string, data?: any) => {
+export const get = (url: string, data?: unknown) => {
   return request({
     url,
     method: 'GET',
-    data
+    data,
   })
 }
 
 // POST请求
-export const post = (url: string, data?: any) => {
+export const post = (url: string, data?: unknown) => {
   return request({
     url,
     method: 'POST',
-    data
+    data,
   })
 }
 
 // PUT请求
-export const put = (url: string, data?: any) => {
+export const put = (url: string, data?: unknown) => {
   return request({
     url,
     method: 'PUT',
-    data
+    data,
   })
 }
 
 // DELETE请求
-export const del = (url: string, data?: any) => {
+export const del = (url: string, data?: unknown) => {
   return request({
     url,
     method: 'DELETE',
-    data
+    data,
   })
 }
 
@@ -106,8 +112,8 @@ export const uploadFile = (url: string, filePath: string, name?: string) => {
     filePath,
     name: name || 'file',
     header: {
-      Authorization: token ? `Bearer ${token}` : ''
-    }
+      Authorization: token ? `Bearer ${token}` : '',
+    },
   })
 }
 
@@ -116,5 +122,5 @@ export default {
   post,
   put,
   del,
-  uploadFile
+  uploadFile,
 }

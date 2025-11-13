@@ -31,18 +31,18 @@ export const corsMiddleware = (req: Request, res: Response, next: NextFunction) 
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
   // 防止点击劫持
   res.setHeader('X-Frame-Options', 'DENY')
-  
+
   // 防止MIME类型嗅探
   res.setHeader('X-Content-Type-Options', 'nosniff')
-  
+
   // XSS保护
   res.setHeader('X-XSS-Protection', '1; mode=block')
-  
+
   // 强制HTTPS（生产环境）
   if (process.env.NODE_ENV === 'production') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
   }
-  
+
   // 内容安全策略
   res.setHeader(
     'Content-Security-Policy',

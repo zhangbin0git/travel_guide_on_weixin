@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { 
+import {
   geocode,
   regeocode,
   textSearch,
@@ -11,7 +11,7 @@ import {
   transitRoute,
   calculateDistance,
   ipLocation,
-  getWeather
+  getWeather,
 } from '../controllers/map'
 
 const router = Router()

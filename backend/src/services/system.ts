@@ -14,9 +14,9 @@ export const systemService = {
       environment: process.env.NODE_ENV || 'development',
       version: process.env.npm_package_version || '1.0.0',
       memory: {
-        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100,
-        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024 * 100) / 100
-      }
+        used: Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100,
+        total: Math.round((process.memoryUsage().heapTotal / 1024 / 1024) * 100) / 100,
+      },
     }
   },
 
@@ -34,7 +34,7 @@ export const systemService = {
           'POST /auth/login': '用户登录',
           'GET /auth/userinfo': '获取用户信息',
           'POST /auth/update': '更新用户信息',
-          'POST /auth/logout': '用户登出'
+          'POST /auth/logout': '用户登出',
         },
         travel: {
           'GET /travel/destinations': '获取目的地列表',
@@ -43,7 +43,7 @@ export const systemService = {
           'GET /travel/guides': '获取攻略列表',
           'GET /travel/guides/:id': '获取攻略详情',
           'POST /travel/guides': '创建攻略',
-          'GET /travel/guides/recommended': '获取推荐攻略'
+          'GET /travel/guides/recommended': '获取推荐攻略',
         },
         map: {
           'GET /map/geocode': '地理编码',
@@ -53,9 +53,9 @@ export const systemService = {
           'GET /map/driving': '驾车路径规划',
           'GET /map/walking': '步行路径规划',
           'GET /map/bicycling': '骑行路径规划',
-          'GET /map/distance': '距离测量'
-        }
-      }
+          'GET /map/distance': '距离测量',
+        },
+      },
     }
-  }
+  },
 }

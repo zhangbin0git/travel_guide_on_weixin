@@ -1,12 +1,12 @@
 import { Router } from 'express'
-import { 
-  getDestinations, 
-  getDestinationDetail, 
+import {
+  getDestinations,
+  getDestinationDetail,
   searchDestinations,
   getGuides,
   getGuideDetail,
   createGuide,
-  getRecommendedGuides
+  getRecommendedGuides,
 } from './travel'
 
 const router = Router()

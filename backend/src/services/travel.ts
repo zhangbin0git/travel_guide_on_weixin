@@ -11,21 +11,18 @@ export const travelService = {
     page: number
     limit: number
     keyword?: string
-  }): Promise<{ data: TravelDestination[], total: number }> {
+  }): Promise<{ data: TravelDestination[]; total: number }> {
     // 模拟数据，实际项目中应该从数据库获取
     const destinations: TravelDestination[] = [
       {
         id: 'dest_1',
         name: '北京',
         description: '中国首都，历史文化名城，拥有故宫、长城等著名景点',
-        images: [
-          'https://example.com/beijing1.jpg',
-          'https://example.com/beijing2.jpg'
-        ],
+        images: ['https://example.com/beijing1.jpg', 'https://example.com/beijing2.jpg'],
         location: {
           longitude: 116.4074,
           latitude: 39.9042,
-          address: '北京市'
+          address: '北京市',
         },
         city: '北京',
         province: '北京市',
@@ -33,20 +30,17 @@ export const travelService = {
         rating: 4.8,
         review_count: 12580,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       },
       {
         id: 'dest_2',
         name: '上海',
         description: '国际化大都市，现代与传统交融，拥有外滩、东方明珠等景点',
-        images: [
-          'https://example.com/shanghai1.jpg',
-          'https://example.com/shanghai2.jpg'
-        ],
+        images: ['https://example.com/shanghai1.jpg', 'https://example.com/shanghai2.jpg'],
         location: {
           longitude: 121.4737,
           latitude: 31.2304,
-          address: '上海市'
+          address: '上海市',
         },
         city: '上海',
         province: '上海市',
@@ -54,20 +48,17 @@ export const travelService = {
         rating: 4.7,
         review_count: 10250,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       },
       {
         id: 'dest_3',
         name: '成都',
         description: '天府之国，美食之都，大熊猫故乡，悠闲的生活方式',
-        images: [
-          'https://example.com/chengdu1.jpg',
-          'https://example.com/chengdu2.jpg'
-        ],
+        images: ['https://example.com/chengdu1.jpg', 'https://example.com/chengdu2.jpg'],
         location: {
           longitude: 104.0668,
           latitude: 30.5728,
-          address: '成都市'
+          address: '成都市',
         },
         city: '成都',
         province: '四川省',
@@ -75,8 +66,8 @@ export const travelService = {
         rating: 4.6,
         review_count: 8960,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
-      }
+        updated_at: '2023-01-01T00:00:00Z',
+      },
     ]
 
     let filteredDestinations = destinations
@@ -84,10 +75,11 @@ export const travelService = {
     // 如果有关键词，进行搜索过滤
     if (params.keyword) {
       const keyword = params.keyword.toLowerCase()
-      filteredDestinations = destinations.filter(dest => 
-        dest.name.toLowerCase().includes(keyword) || 
-        dest.description.toLowerCase().includes(keyword) ||
-        dest.tags.some(tag => tag.toLowerCase().includes(keyword))
+      filteredDestinations = destinations.filter(
+        dest =>
+          dest.name.toLowerCase().includes(keyword) ||
+          dest.description.toLowerCase().includes(keyword) ||
+          dest.tags.some(tag => tag.toLowerCase().includes(keyword))
       )
     }
 
@@ -98,7 +90,7 @@ export const travelService = {
 
     return {
       data: paginatedDestinations,
-      total: filteredDestinations.length
+      total: filteredDestinations.length,
     }
   },
 
@@ -112,14 +104,11 @@ export const travelService = {
         id: 'dest_1',
         name: '北京',
         description: '中国首都，历史文化名城，拥有故宫、长城等著名景点',
-        images: [
-          'https://example.com/beijing1.jpg',
-          'https://example.com/beijing2.jpg'
-        ],
+        images: ['https://example.com/beijing1.jpg', 'https://example.com/beijing2.jpg'],
         location: {
           longitude: 116.4074,
           latitude: 39.9042,
-          address: '北京市'
+          address: '北京市',
         },
         city: '北京',
         province: '北京市',
@@ -127,8 +116,8 @@ export const travelService = {
         rating: 4.8,
         review_count: 12580,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
-      }
+        updated_at: '2023-01-01T00:00:00Z',
+      },
     ]
 
     return destinations.find(dest => dest.id === id) || null
@@ -141,21 +130,18 @@ export const travelService = {
     keyword: string
     page: number
     limit: number
-  }): Promise<{ data: TravelDestination[], total: number }> {
+  }): Promise<{ data: TravelDestination[]; total: number }> {
     // 模拟数据，实际项目中应该从数据库获取
     const destinations: TravelDestination[] = [
       {
         id: 'dest_1',
         name: '北京',
         description: '中国首都，历史文化名城，拥有故宫、长城等著名景点',
-        images: [
-          'https://example.com/beijing1.jpg',
-          'https://example.com/beijing2.jpg'
-        ],
+        images: ['https://example.com/beijing1.jpg', 'https://example.com/beijing2.jpg'],
         location: {
           longitude: 116.4074,
           latitude: 39.9042,
-          address: '北京市'
+          address: '北京市',
         },
         city: '北京',
         province: '北京市',
@@ -163,20 +149,17 @@ export const travelService = {
         rating: 4.8,
         review_count: 12580,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       },
       {
         id: 'dest_2',
         name: '上海',
         description: '国际化大都市，现代与传统交融，拥有外滩、东方明珠等景点',
-        images: [
-          'https://example.com/shanghai1.jpg',
-          'https://example.com/shanghai2.jpg'
-        ],
+        images: ['https://example.com/shanghai1.jpg', 'https://example.com/shanghai2.jpg'],
         location: {
           longitude: 121.4737,
           latitude: 31.2304,
-          address: '上海市'
+          address: '上海市',
         },
         city: '上海',
         province: '上海市',
@@ -184,15 +167,16 @@ export const travelService = {
         rating: 4.7,
         review_count: 10250,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
-      }
+        updated_at: '2023-01-01T00:00:00Z',
+      },
     ]
 
     const keyword = params.keyword.toLowerCase()
-    const filteredDestinations = destinations.filter(dest => 
-      dest.name.toLowerCase().includes(keyword) || 
-      dest.description.toLowerCase().includes(keyword) ||
-      dest.tags.some(tag => tag.toLowerCase().includes(keyword))
+    const filteredDestinations = destinations.filter(
+      dest =>
+        dest.name.toLowerCase().includes(keyword) ||
+        dest.description.toLowerCase().includes(keyword) ||
+        dest.tags.some(tag => tag.toLowerCase().includes(keyword))
     )
 
     // 分页处理
@@ -202,7 +186,7 @@ export const travelService = {
 
     return {
       data: paginatedDestinations,
-      total: filteredDestinations.length
+      total: filteredDestinations.length,
     }
   },
 
@@ -214,14 +198,15 @@ export const travelService = {
     limit: number
     destinationId?: string
     category?: string
-  }): Promise<{ data: TravelGuide[], total: number }> {
+  }): Promise<{ data: TravelGuide[]; total: number }> {
     // 模拟数据，实际项目中应该从数据库获取
     const guides: TravelGuide[] = [
       {
         id: 'guide_1',
         title: '北京三日游完美攻略',
         description: '带你游览北京最经典的景点，品尝地道美食',
-        content: '第一天：故宫-天安门广场-王府井\n第二天：长城-明十三陵\n第三天：颐和园-圆明园-天坛',
+        content:
+          '第一天：故宫-天安门广场-王府井\n第二天：长城-明十三陵\n第三天：颐和园-圆明园-天坛',
         cover_image: 'https://example.com/beijing-guide.jpg',
         author: {
           id: 'user_1',
@@ -230,20 +215,17 @@ export const travelService = {
           avatar: 'https://example.com/avatar1.jpg',
           gender: 1,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         destination: {
           id: 'dest_1',
           name: '北京',
           description: '中国首都，历史文化名城，拥有故宫、长城等著名景点',
-          images: [
-            'https://example.com/beijing1.jpg',
-            'https://example.com/beijing2.jpg'
-          ],
+          images: ['https://example.com/beijing1.jpg', 'https://example.com/beijing2.jpg'],
           location: {
             longitude: 116.4074,
             latitude: 39.9042,
-            address: '北京市'
+            address: '北京市',
           },
           city: '北京',
           province: '北京市',
@@ -251,14 +233,14 @@ export const travelService = {
           rating: 4.8,
           review_count: 12580,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         tags: ['经典路线', '美食', '文化'],
         view_count: 1580,
         like_count: 320,
         is_public: true,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       },
       {
         id: 'guide_2',
@@ -273,20 +255,17 @@ export const travelService = {
           avatar: 'https://example.com/avatar2.jpg',
           gender: 2,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         destination: {
           id: 'dest_2',
           name: '上海',
           description: '国际化大都市，现代与传统交融，拥有外滩、东方明珠等景点',
-          images: [
-            'https://example.com/shanghai1.jpg',
-            'https://example.com/shanghai2.jpg'
-          ],
+          images: ['https://example.com/shanghai1.jpg', 'https://example.com/shanghai2.jpg'],
           location: {
             longitude: 121.4737,
             latitude: 31.2304,
-            address: '上海市'
+            address: '上海市',
           },
           city: '上海',
           province: '上海市',
@@ -294,15 +273,15 @@ export const travelService = {
           rating: 4.7,
           review_count: 10250,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         tags: ['城市游', '购物', '夜景'],
         view_count: 980,
         like_count: 210,
         is_public: true,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
-      }
+        updated_at: '2023-01-01T00:00:00Z',
+      },
     ]
 
     let filteredGuides = guides
@@ -314,13 +293,15 @@ export const travelService = {
 
     // 按分类筛选
     if (params.category) {
-      filteredGuides = filteredGuides.filter(guide => 
+      filteredGuides = filteredGuides.filter(guide =>
         guide.tags.some(tag => tag.includes(params.category as string))
       )
     }
 
     // 按创建时间倒序排列
-    filteredGuides.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    filteredGuides.sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
 
     // 分页处理
     const startIndex = (params.page - 1) * params.limit
@@ -329,7 +310,7 @@ export const travelService = {
 
     return {
       data: paginatedGuides,
-      total: filteredGuides.length
+      total: filteredGuides.length,
     }
   },
 
@@ -343,7 +324,8 @@ export const travelService = {
         id: 'guide_1',
         title: '北京三日游完美攻略',
         description: '带你游览北京最经典的景点，品尝地道美食',
-        content: '第一天：故宫-天安门广场-王府井\n第二天：长城-明十三陵\n第三天：颐和园-圆明园-天坛',
+        content:
+          '第一天：故宫-天安门广场-王府井\n第二天：长城-明十三陵\n第三天：颐和园-圆明园-天坛',
         cover_image: 'https://example.com/beijing-guide.jpg',
         author: {
           id: 'user_1',
@@ -352,20 +334,17 @@ export const travelService = {
           avatar: 'https://example.com/avatar1.jpg',
           gender: 1,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         destination: {
           id: 'dest_1',
           name: '北京',
           description: '中国首都，历史文化名城，拥有故宫、长城等著名景点',
-          images: [
-            'https://example.com/beijing1.jpg',
-            'https://example.com/beijing2.jpg'
-          ],
+          images: ['https://example.com/beijing1.jpg', 'https://example.com/beijing2.jpg'],
           location: {
             longitude: 116.4074,
             latitude: 39.9042,
-            address: '北京市'
+            address: '北京市',
           },
           city: '北京',
           province: '北京市',
@@ -373,24 +352,24 @@ export const travelService = {
           rating: 4.8,
           review_count: 12580,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         tags: ['经典路线', '美食', '文化'],
         view_count: 1580,
         like_count: 320,
         is_public: true,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
-      }
+        updated_at: '2023-01-01T00:00:00Z',
+      },
     ]
 
     const guide = guides.find(g => g.id === id)
-    
+
     // 增加浏览量
     if (guide) {
       guide.view_count += 1
     }
-    
+
     return guide || null
   },
 
@@ -419,7 +398,7 @@ export const travelService = {
       avatar: 'https://example.com/default-avatar.jpg',
       gender: 1,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }
 
     // 创建新攻略
@@ -436,7 +415,7 @@ export const travelService = {
       like_count: 0,
       is_public: true,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }
 
     // 实际项目中应该保存到数据库
@@ -446,16 +425,15 @@ export const travelService = {
   /**
    * 获取推荐攻略
    */
-  async getRecommendedGuides(params: {
-    limit: number
-  }): Promise<TravelGuide[]> {
+  async getRecommendedGuides(params: { limit: number }): Promise<TravelGuide[]> {
     // 模拟数据，实际项目中应该从数据库获取
     const guides: TravelGuide[] = [
       {
         id: 'guide_1',
         title: '北京三日游完美攻略',
         description: '带你游览北京最经典的景点，品尝地道美食',
-        content: '第一天：故宫-天安门广场-王府井\n第二天：长城-明十三陵\n第三天：颐和园-圆明园-天坛',
+        content:
+          '第一天：故宫-天安门广场-王府井\n第二天：长城-明十三陵\n第三天：颐和园-圆明园-天坛',
         cover_image: 'https://example.com/beijing-guide.jpg',
         author: {
           id: 'user_1',
@@ -464,20 +442,17 @@ export const travelService = {
           avatar: 'https://example.com/avatar1.jpg',
           gender: 1,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         destination: {
           id: 'dest_1',
           name: '北京',
           description: '中国首都，历史文化名城，拥有故宫、长城等著名景点',
-          images: [
-            'https://example.com/beijing1.jpg',
-            'https://example.com/beijing2.jpg'
-          ],
+          images: ['https://example.com/beijing1.jpg', 'https://example.com/beijing2.jpg'],
           location: {
             longitude: 116.4074,
             latitude: 39.9042,
-            address: '北京市'
+            address: '北京市',
           },
           city: '北京',
           province: '北京市',
@@ -485,14 +460,14 @@ export const travelService = {
           rating: 4.8,
           review_count: 12580,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         tags: ['经典路线', '美食', '文化'],
         view_count: 1580,
         like_count: 320,
         is_public: true,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       },
       {
         id: 'guide_2',
@@ -507,20 +482,17 @@ export const travelService = {
           avatar: 'https://example.com/avatar2.jpg',
           gender: 2,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         destination: {
           id: 'dest_2',
           name: '上海',
           description: '国际化大都市，现代与传统交融，拥有外滩、东方明珠等景点',
-          images: [
-            'https://example.com/shanghai1.jpg',
-            'https://example.com/shanghai2.jpg'
-          ],
+          images: ['https://example.com/shanghai1.jpg', 'https://example.com/shanghai2.jpg'],
           location: {
             longitude: 121.4737,
             latitude: 31.2304,
-            address: '上海市'
+            address: '上海市',
           },
           city: '上海',
           province: '上海市',
@@ -528,15 +500,15 @@ export const travelService = {
           rating: 4.7,
           review_count: 10250,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         tags: ['城市游', '购物', '夜景'],
         view_count: 980,
         like_count: 210,
         is_public: true,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
-      }
+        updated_at: '2023-01-01T00:00:00Z',
+      },
     ]
 
     // 按浏览量和点赞数排序，获取推荐攻略
@@ -557,7 +529,7 @@ export const travelService = {
     page: number
     limit: number
     userId: string
-  }): Promise<{ data: TravelPlan[], total: number }> {
+  }): Promise<{ data: TravelPlan[]; total: number }> {
     // 模拟数据，实际项目中应该从数据库获取
     const plans: TravelPlan[] = [
       {
@@ -571,7 +543,7 @@ export const travelService = {
         notes: '国庆期间，提前预订酒店',
         user_id: 'user_1',
         created_at: '2023-09-01T00:00:00Z',
-        updated_at: '2023-09-01T00:00:00Z'
+        updated_at: '2023-09-01T00:00:00Z',
       },
       {
         id: 'plan_2',
@@ -584,15 +556,17 @@ export const travelService = {
         notes: '周末出行，提前规划路线',
         user_id: 'user_1',
         created_at: '2023-10-01T00:00:00Z',
-        updated_at: '2023-10-01T00:00:00Z'
-      }
+        updated_at: '2023-10-01T00:00:00Z',
+      },
     ]
 
     // 按用户ID筛选
     const filteredPlans = plans.filter(plan => plan.user_id === params.userId)
 
     // 按创建时间倒序排列
-    filteredPlans.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    filteredPlans.sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
 
     // 分页处理
     const startIndex = (params.page - 1) * params.limit
@@ -601,7 +575,7 @@ export const travelService = {
 
     return {
       data: paginatedPlans,
-      total: filteredPlans.length
+      total: filteredPlans.length,
     }
   },
 
@@ -622,8 +596,8 @@ export const travelService = {
         notes: '国庆期间，提前预订酒店',
         user_id: 'user_1',
         created_at: '2023-09-01T00:00:00Z',
-        updated_at: '2023-09-01T00:00:00Z'
-      }
+        updated_at: '2023-09-01T00:00:00Z',
+      },
     ]
 
     return plans.find(plan => plan.id === id) || null
@@ -654,7 +628,7 @@ export const travelService = {
       notes: params.notes,
       user_id: params.userId,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }
 
     // 实际项目中应该保存到数据库
@@ -680,9 +654,9 @@ export const travelService = {
       cover_image: 'https://example.com/ai-generated-guide.jpg',
       tags: ['AI生成', params.travelStyle || '休闲游'],
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }
 
     return generatedGuide
-  }
+  },
 }

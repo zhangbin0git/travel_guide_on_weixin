@@ -29,8 +29,8 @@ const limiter = rateLimit({
     code: 429,
     message: '请求过于频繁，请稍后再试',
     data: null,
-    timestamp: Date.now()
-  }
+    timestamp: Date.now(),
+  },
 })
 app.use(limiter)
 

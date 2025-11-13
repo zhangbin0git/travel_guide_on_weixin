@@ -4,7 +4,7 @@ import travelReducer from './reducers/travel'
 
 const rootReducer = combineReducers({
   user: userReducer,
-  travel: travelReducer
+  travel: travelReducer,
 })
 
 export default rootReducer

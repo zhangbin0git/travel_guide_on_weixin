@@ -10,7 +10,7 @@ interface UserState {
 const initialState: UserState = {
   userInfo: null,
   token: null,
-  isLogin: false
+  isLogin: false,
 }
 
 const userSlice = createSlice({
@@ -24,12 +24,12 @@ const userSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload
     },
-    logout: (state) => {
+    logout: state => {
       state.userInfo = null
       state.token = null
       state.isLogin = false
-    }
-  }
+    },
+  },
 })
 
 export const { setUserInfo, setToken, logout } = userSlice.actions

@@ -14,7 +14,7 @@ const initialState: TravelState = {
   guides: [],
   currentGuide: null,
   searchResults: [],
-  loading: false
+  loading: false,
 }
 
 const travelSlice = createSlice({
@@ -35,8 +35,8 @@ const travelSlice = createSlice({
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
-    }
-  }
+    },
+  },
 })
 
 export const {
@@ -44,7 +44,7 @@ export const {
   setGuides,
   setCurrentGuide,
   setSearchResults,
-  setLoading
+  setLoading,
 } = travelSlice.actions
 
 export default travelSlice.reducer

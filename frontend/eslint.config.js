@@ -19,6 +19,11 @@ export default [
           jsx: true,
         },
       },
+      globals: {
+        console: 'readonly',
+        definePageConfig: 'readonly',
+        defineAppConfig: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': typescript,

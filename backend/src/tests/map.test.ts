@@ -37,7 +37,7 @@ describe('地图接口', () => {
         .get('/api/map/driving')
         .query({
           origin: '116.397428,39.90923',
-          destination: '116.407394,39.904211'
+          destination: '116.407394,39.904211',
         })
         .expect(200)
 

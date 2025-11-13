@@ -28,5 +28,9 @@ module.exports = {
     react: {
       version: 'detect'
     }
+  },
+  globals: {
+    console: 'readonly',
+    definePageConfig: 'readonly'
   }
 }

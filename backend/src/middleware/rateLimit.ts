@@ -10,7 +10,7 @@ const rateLimiter = new RateLimiterMemory({
   },
   points: 100, // 请求次数
   duration: 60, // 时间窗口（秒）
-  blockDuration: 60 // 超出限制后的阻塞时间（秒）
+  blockDuration: 60, // 超出限制后的阻塞时间（秒）
 })
 
 // 创建严格的速率限制器（用于敏感操作）
@@ -21,7 +21,7 @@ const strictRateLimiter = new RateLimiterMemory({
   },
   points: 5, // 请求次数
   duration: 60, // 时间窗口（秒）
-  blockDuration: 300 // 超出限制后的阻塞时间（秒）
+  blockDuration: 300, // 超出限制后的阻塞时间（秒）
 })
 
 /**
@@ -40,7 +40,11 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
 /**
  * 严格速率限制中间件（用于登录等敏感操作）
  */
-export const strictRateLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const strictRateLimitMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     await strictRateLimiter.consume(req.ip || 'unknown')
     next()

@@ -7,7 +7,7 @@ import {
   planDrivingRoute,
   planWalkingRoute,
   planBicyclingRoute,
-  calculateDistance
+  calculateDistance,
 } from './map'
 
 const router = Router()

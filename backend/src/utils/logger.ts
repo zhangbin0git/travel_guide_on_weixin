@@ -25,9 +25,7 @@ winston.addColors(colors)
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-  ),
+  winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
 )
 
 // 生产环境日志格式
@@ -41,20 +39,20 @@ const productionFormat = winston.format.combine(
 const transports = [
   // 控制台输出
   new winston.transports.Console({
-    format: process.env.NODE_ENV === 'production' ? productionFormat : format
+    format: process.env.NODE_ENV === 'production' ? productionFormat : format,
   }),
-  
+
   // 错误日志文件
   new winston.transports.File({
     filename: path.join(__dirname, '../logs/error.log'),
     level: 'error',
-    format: productionFormat
+    format: productionFormat,
   }),
-  
+
   // 所有日志文件
   new winston.transports.File({
     filename: path.join(__dirname, '../logs/combined.log'),
-    format: productionFormat
+    format: productionFormat,
   }),
 ]
 

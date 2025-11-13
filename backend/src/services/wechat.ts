@@ -21,7 +21,7 @@ export class WechatService {
   async code2Session(code: string): Promise<{ openid: string; session_key: string }> {
     try {
       const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${this.appId}&secret=${this.appSecret}&js_code=${code}&grant_type=authorization_code`
-      
+
       const response = await axios.get(url)
       const data = response.data
 
@@ -31,17 +31,17 @@ export class WechatService {
 
       return {
         openid: data.openid,
-        session_key: data.session_key
+        session_key: data.session_key,
       }
     } catch (error) {
       // 在开发环境中，返回模拟数据
       if (process.env.NODE_ENV === 'development') {
         return {
           openid: `mock_openid_${Date.now()}`,
-          session_key: `mock_session_key_${Date.now()}`
+          session_key: `mock_session_key_${Date.now()}`,
         }
       }
-      
+
       throw new Error(`获取微信用户信息失败: ${error.message}`)
     }
   }
@@ -53,7 +53,7 @@ export class WechatService {
   async getAccessToken(): Promise<string> {
     try {
       const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${this.appId}&secret=${this.appSecret}`
-      
+
       const response = await axios.get(url)
       const data = response.data
 
@@ -67,7 +67,7 @@ export class WechatService {
       if (process.env.NODE_ENV === 'development') {
         return `mock_access_token_${Date.now()}`
       }
-      
+
       throw new Error(`获取微信access_token失败: ${error.message}`)
     }
   }
@@ -82,14 +82,14 @@ export class WechatService {
     try {
       const accessToken = await this.getAccessToken()
       const url = `https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${accessToken}`
-      
+
       const data = {
         scene,
-        page
+        page,
       }
-      
+
       const response = await axios.post(url, data, {
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
       })
 
       // 检查响应是否是错误信息

@@ -11,12 +11,7 @@ export const notFoundHandler = (req: Request, res: Response) => {
 /**
  * 全局错误处理中间件
  */
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('错误详情:', err)
 
   // 处理验证错误

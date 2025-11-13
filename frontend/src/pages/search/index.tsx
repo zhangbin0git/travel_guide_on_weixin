@@ -1,40 +1,40 @@
 import { Component } from 'react'
-import { View, Input } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
 import './index.scss'
 
 export default class Search extends Component {
   state = {
-    value: ''
+    value: '',
   }
 
-  componentWillMount () { }
+  UNSAFE_componentWillMount() {}
 
-  componentDidMount () { }
+  componentDidMount() {}
 
-  componentWillUnmount () { }
+  componentWillUnmount() {}
 
-  componentDidShow () { }
+  componentDidShow() {}
 
-  componentDidHide () { }
+  componentDidHide() {}
 
-  onChange (value) {
+  onChange(value) {
     this.setState({ value })
   }
 
-  onActionClick () {
+  onActionClick() {
     console.log('搜索内容:', this.state.value)
   }
 
-  render () {
+  render() {
     return (
-      <View className='search'>
-        <View className='container'>
+      <View className="search">
+        <View className="container">
           <AtSearchBar
             value={this.state.value}
             onChange={this.onChange.bind(this)}
             onActionClick={this.onActionClick.bind(this)}
-            placeholder='搜索目的地、景点或攻略'
+            placeholder="搜索目的地、景点或攻略"
           />
         </View>
       </View>

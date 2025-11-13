@@ -7,12 +7,16 @@ export const getDestinations = async (): Promise<TravelDestination[]> => {
 }
 
 // 获取目的地详情
-export const getDestinationDetail = async (id: string): Promise<TravelDestination> => {
+export const getDestinationDetail = async (
+  id: string
+): Promise<TravelDestination> => {
   return get(`/destinations/${id}`)
 }
 
 // 搜索目的地
-export const searchDestinations = async (keyword: string): Promise<TravelDestination[]> => {
+export const searchDestinations = async (
+  keyword: string
+): Promise<TravelDestination[]> => {
   return get('/destinations/search', { keyword })
 }
 
@@ -27,11 +31,15 @@ export const getGuideDetail = async (id: string): Promise<TravelGuide> => {
 }
 
 // 创建攻略
-export const createGuide = async (guide: Partial<TravelGuide>): Promise<TravelGuide> => {
+export const createGuide = async (
+  guide: Partial<TravelGuide>
+): Promise<TravelGuide> => {
   return post('/guides', guide)
 }
 
 // 获取推荐攻略
-export const getRecommendedGuides = async (limit = 10): Promise<TravelGuide[]> => {
+export const getRecommendedGuides = async (
+  limit = 10
+): Promise<TravelGuide[]> => {
   return get('/guides/recommended', { limit })
 }

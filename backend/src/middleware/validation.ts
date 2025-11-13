@@ -12,20 +12,20 @@ export const validate = (schema: Schema, source: 'body' | 'query' | 'params' = '
     const { error, value } = schema.validate(req[source], {
       abortEarly: false,
       stripUnknown: true,
-      convert: true
+      convert: true,
     })
 
     if (error) {
       const errors = error.details.map(detail => ({
         field: detail.path.join('.'),
-        message: detail.message
+        message: detail.message,
       }))
 
       return res.status(400).json({
         code: 400,
         message: '请求参数验证失败',
         data: errors,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
     }
 

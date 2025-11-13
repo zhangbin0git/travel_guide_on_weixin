@@ -8,7 +8,7 @@ describe('认证接口', () => {
         .post('/api/auth/login')
         .send({
           username: 'testuser',
-          password: 'password123'
+          password: 'password123',
         })
         .expect(200)
 
@@ -23,7 +23,7 @@ describe('认证接口', () => {
         .post('/api/auth/login')
         .send({
           username: 'invaliduser',
-          password: 'wrongpassword'
+          password: 'wrongpassword',
         })
         .expect(401)
 
@@ -35,12 +35,10 @@ describe('认证接口', () => {
   describe('GET /api/auth/userinfo', () => {
     it('应该返回用户信息', async () => {
       // 先登录获取token
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          username: 'testuser',
-          password: 'password123'
-        })
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        username: 'testuser',
+        password: 'password123',
+      })
 
       const token = loginResponse.body.data.token
 

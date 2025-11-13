@@ -32,10 +32,7 @@ export const errorLogger = (err: Error, req: Request, res: Response, next: NextF
   const { method, url, ip } = req
   const userAgent = req.get('User-Agent') || ''
 
-  console.error(
-    `[${new Date().toISOString()}] ERROR: ${method} ${url} - ${ip} - ${userAgent}`,
-    err
-  )
+  console.error(`[${new Date().toISOString()}] ERROR: ${method} ${url} - ${ip} - ${userAgent}`, err)
 
   next(err)
 }

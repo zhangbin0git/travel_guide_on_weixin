@@ -10,7 +10,7 @@ import {
   getTravelPlans,
   getTravelPlanDetail,
   createTravelPlan,
-  generateTravelGuide
+  generateTravelGuide,
 } from '../controllers/travel'
 import { authenticate } from '../middleware/auth'
 

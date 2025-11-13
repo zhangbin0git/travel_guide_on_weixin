@@ -17,8 +17,8 @@ router.get('/health', (req, res) => {
     message: '服务运行正常',
     data: {
       status: 'ok',
-      timestamp: new Date().toISOString()
-    }
+      timestamp: new Date().toISOString(),
+    },
   })
 })
 

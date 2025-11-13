@@ -17,7 +17,7 @@ export const sendSuccess = (
     code,
     message,
     data,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   })
 }
 
@@ -28,17 +28,12 @@ export const sendSuccess = (
  * @param code 错误状态码
  * @param data 错误详情
  */
-export const sendError = (
-  res: Response,
-  message: string,
-  code: number = 500,
-  data: any = null
-) => {
+export const sendError = (res: Response, message: string, code: number = 500, data: any = null) => {
   res.status(code).json({
     code,
     message,
     data,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   })
 }
 
@@ -60,7 +55,7 @@ export const sendPaginatedResponse = (
   message: string = '获取数据成功'
 ) => {
   const totalPages = Math.ceil(total / limit)
-  
+
   res.status(200).json({
     code: 200,
     message,
@@ -72,9 +67,9 @@ export const sendPaginatedResponse = (
         total,
         totalPages,
         hasNext: page < totalPages,
-        hasPrev: page > 1
-      }
+        hasPrev: page > 1,
+      },
     },
-    timestamp: Date.now()
+    timestamp: Date.now(),
   })
 }
