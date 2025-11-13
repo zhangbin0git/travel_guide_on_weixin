@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { sendSuccess, sendError } from '../utils/response'
-import { Location, Poi, RoutePlan } from '../types'
-import { logger } from '../utils/logger'
+import { sendSuccess, sendError } from '../../utils/response'
+import { Location, Poi, RoutePlan } from '../../types'
+import { logger } from '../../utils/logger'
 
 // 模拟高德地图MCP API调用
 // 实际项目中应该通过MCP客户端调用高德地图API

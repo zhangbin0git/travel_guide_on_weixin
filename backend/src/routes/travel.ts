@@ -12,7 +12,7 @@ import {
   createTravelPlan,
   generateTravelGuide,
 } from '../controllers/travel'
-import { authenticate } from '../middleware/auth'
+import { authenticateToken } from '../middleware/auth'
 
 const router = Router()
 
@@ -25,12 +25,12 @@ router.get('/destinations/:id', getDestinationDetail)
 router.get('/guides', getGuides)
 router.get('/guides/recommended', getRecommendedGuides)
 router.get('/guides/:id', getGuideDetail)
-router.post('/guides', authenticate, createGuide)
+router.post('/guides', authenticateToken, createGuide)
 router.post('/guides/generate', generateTravelGuide)
 
 // 旅行计划相关路由
-router.get('/plans', authenticate, getTravelPlans)
+router.get('/plans', authenticateToken, getTravelPlans)
 router.get('/plans/:id', getTravelPlanDetail)
-router.post('/plans', authenticate, createTravelPlan)
+router.post('/plans', authenticateToken, createTravelPlan)
 
 export default router

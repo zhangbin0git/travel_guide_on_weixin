@@ -50,7 +50,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
     next()
   } catch (error) {
-    if (error.message === '令牌已过期') {
+    if (error instanceof Error && error.message === '令牌已过期') {
       return sendError(res, '访问令牌已过期', 403)
     }
 

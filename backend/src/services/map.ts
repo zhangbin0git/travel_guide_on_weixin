@@ -385,7 +385,7 @@ export const mapService = {
    */
   async calculateDistance(origins: string, destination: string, type: number = 1) {
     try {
-      const result = await MCPTools.calculateDistance(origins, destination, type.toString())
+      const result = await MCPTools.distance(origins, destination, type.toString())
 
       // 处理API返回数据，转换为统一格式
       if (result && result.length > 0 && result[0].type === 'text') {
@@ -450,7 +450,7 @@ export const mapService = {
    */
   async getWeather(city: string) {
     try {
-      const result = await MCPTools.getWeather(city)
+      const result = await MCPTools.weather(city)
 
       // 处理API返回数据，转换为统一格式
       if (result && result.length > 0 && result[0].type === 'text') {

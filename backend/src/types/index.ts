@@ -57,6 +57,21 @@ export interface TravelGuide {
   updated_at: string
 }
 
+// 旅行计划类型
+export interface TravelPlan {
+  id: string
+  title: string
+  destination: string
+  start_date: string
+  end_date: string
+  days: number
+  budget?: number
+  notes?: string
+  user_id: string
+  created_at: string
+  updated_at: string
+}
+
 // 地图位置类型
 export interface Location {
   longitude: number

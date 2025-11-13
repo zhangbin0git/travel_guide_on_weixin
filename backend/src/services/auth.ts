@@ -1,29 +1,27 @@
-import jwt from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken'
 import { User } from '../types'
 
 // 模拟用户数据，实际项目中应该从数据库获取
 const users: User[] = []
 
 // JWT密钥，实际项目中应该从环境变量获取
-const JWT_SECRET = process.env.JWT_SECRET || 'travel_guide_secret_key'
+const JWT_SECRET: string = process.env.JWT_SECRET || 'travel_guide_secret_key'
 
 /**
  * 生成JWT令牌
  */
 const generateToken = (user: User): string => {
   const expiresIn = process.env.JWT_EXPIRES_IN || '7d'
-
-  return jwt.sign(
-    {
-      id: user.id,
-      openid: user.openid,
-      nickname: user.nickname,
-      avatar: user.avatar,
-      gender: user.gender,
-    },
-    JWT_SECRET,
-    { expiresIn }
-  )
+  
+  const payload = {
+    id: user.id,
+    openid: user.openid,
+    nickname: user.nickname,
+    avatar: user.avatar,
+    gender: user.gender,
+  }
+  
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn as any })
 }
 
 /**

@@ -166,7 +166,7 @@ export class TravelController {
       const result = await travelService.getTravelPlans({
         page: Number(page),
         limit: Number(limit),
-        userId: (userId as string) || req.user?.id,
+        userId: (userId as string) || req.user?.id || '',
       })
 
       sendPaginatedResponse(res, result.data, result.total, Number(page), Number(limit))

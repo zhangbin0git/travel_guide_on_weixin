@@ -10,13 +10,13 @@ export const geocode = async (req: Request, res: Response) => {
     const { address, city } = req.query
 
     if (!address) {
-      return sendError(res, 400, '地址不能为空')
+      return sendError(res, '地址不能为空', 400)
     }
 
     const result = await mapService.geocode(address as string, city as string)
     sendSuccess(res, result, '地理编码成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '地理编码失败')
+    sendError(res, error.message || '地理编码失败', 500)
   }
 }
 
@@ -28,13 +28,13 @@ export const regeocode = async (req: Request, res: Response) => {
     const { location } = req.query
 
     if (!location) {
-      return sendError(res, 400, '坐标不能为空')
+      return sendError(res, '坐标不能为空', 400)
     }
 
     const result = await mapService.regeocode(location as string)
     sendSuccess(res, result, '逆地理编码成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '逆地理编码失败')
+    sendError(res, error.message || '逆地理编码失败', 500)
   }
 }
 
@@ -46,7 +46,7 @@ export const textSearch = async (req: Request, res: Response) => {
     const { keywords, city, citylimit } = req.query
 
     if (!keywords) {
-      return sendError(res, 400, '搜索关键词不能为空')
+      return sendError(res, '搜索关键词不能为空', 400)
     }
 
     const result = await mapService.textSearch(
@@ -56,7 +56,7 @@ export const textSearch = async (req: Request, res: Response) => {
     )
     sendSuccess(res, result, 'POI搜索成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || 'POI搜索失败')
+    sendError(res, error.message || 'POI搜索失败', 500)
   }
 }
 
@@ -68,7 +68,7 @@ export const aroundSearch = async (req: Request, res: Response) => {
     const { keywords, location, radius } = req.query
 
     if (!keywords || !location) {
-      return sendError(res, 400, '搜索关键词和中心点坐标不能为空')
+      return sendError(res, '搜索关键词和中心点坐标不能为空', 400)
     }
 
     const result = await mapService.aroundSearch(
@@ -78,7 +78,7 @@ export const aroundSearch = async (req: Request, res: Response) => {
     )
     sendSuccess(res, result, '周边搜索成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '周边搜索失败')
+    sendError(res, error.message || '周边搜索失败', 500)
   }
 }
 
@@ -90,13 +90,13 @@ export const getPoiDetail = async (req: Request, res: Response) => {
     const { id } = req.params
 
     if (!id) {
-      return sendError(res, 400, 'POI ID不能为空')
+      return sendError(res, 'POI ID不能为空', 400)
     }
 
     const result = await mapService.getPoiDetail(id)
     sendSuccess(res, result, '获取POI详情成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '获取POI详情失败')
+    sendError(res, error.message || '获取POI详情失败', 500)
   }
 }
 
@@ -108,13 +108,13 @@ export const drivingRoute = async (req: Request, res: Response) => {
     const { origin, destination } = req.query
 
     if (!origin || !destination) {
-      return sendError(res, 400, '起点和终点坐标不能为空')
+      return sendError(res, '起点和终点坐标不能为空', 400)
     }
 
     const result = await mapService.drivingRoute(origin as string, destination as string)
     sendSuccess(res, result, '驾车路径规划成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '驾车路径规划失败')
+    sendError(res, error.message || '驾车路径规划失败', 500)
   }
 }
 
@@ -126,13 +126,13 @@ export const walkingRoute = async (req: Request, res: Response) => {
     const { origin, destination } = req.query
 
     if (!origin || !destination) {
-      return sendError(res, 400, '起点和终点坐标不能为空')
+      return sendError(res, '起点和终点坐标不能为空', 400)
     }
 
     const result = await mapService.walkingRoute(origin as string, destination as string)
     sendSuccess(res, result, '步行路径规划成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '步行路径规划失败')
+    sendError(res, error.message || '步行路径规划失败', 500)
   }
 }
 
@@ -144,13 +144,13 @@ export const bicyclingRoute = async (req: Request, res: Response) => {
     const { origin, destination } = req.query
 
     if (!origin || !destination) {
-      return sendError(res, 400, '起点和终点坐标不能为空')
+      return sendError(res, '起点和终点坐标不能为空', 400)
     }
 
     const result = await mapService.bicyclingRoute(origin as string, destination as string)
     sendSuccess(res, result, '骑行路径规划成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '骑行路径规划失败')
+    sendError(res, error.message || '骑行路径规划失败', 500)
   }
 }
 
@@ -162,7 +162,7 @@ export const transitRoute = async (req: Request, res: Response) => {
     const { origin, destination, city, cityd } = req.query
 
     if (!origin || !destination || !city || !cityd) {
-      return sendError(res, 400, '起点、终点、起点城市和终点城市不能为空')
+      return sendError(res, '起点、终点、起点城市和终点城市不能为空', 400)
     }
 
     const result = await mapService.transitRoute(
@@ -173,7 +173,7 @@ export const transitRoute = async (req: Request, res: Response) => {
     )
     sendSuccess(res, result, '公共交通路径规划成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '公共交通路径规划失败')
+    sendError(res, error.message || '公共交通路径规划失败', 500)
   }
 }
 
@@ -185,7 +185,7 @@ export const calculateDistance = async (req: Request, res: Response) => {
     const { origins, destination, type } = req.query
 
     if (!origins || !destination) {
-      return sendError(res, 400, '起点和终点坐标不能为空')
+      return sendError(res, '起点和终点坐标不能为空', 400)
     }
 
     const result = await mapService.calculateDistance(
@@ -195,7 +195,7 @@ export const calculateDistance = async (req: Request, res: Response) => {
     )
     sendSuccess(res, result, '距离计算成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '距离计算失败')
+    sendError(res, error.message || '距离计算失败', 500)
   }
 }
 
@@ -207,13 +207,13 @@ export const ipLocation = async (req: Request, res: Response) => {
     const { ip } = req.query
 
     if (!ip) {
-      return sendError(res, 400, 'IP地址不能为空')
+      return sendError(res, 'IP地址不能为空', 400)
     }
 
     const result = await mapService.ipLocation(ip as string)
     sendSuccess(res, result, 'IP定位成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || 'IP定位失败')
+    sendError(res, error.message || 'IP定位失败', 500)
   }
 }
 
@@ -225,12 +225,12 @@ export const getWeather = async (req: Request, res: Response) => {
     const { city } = req.query
 
     if (!city) {
-      return sendError(res, 400, '城市不能为空')
+      return sendError(res, '城市不能为空', 400)
     }
 
     const result = await mapService.getWeather(city as string)
     sendSuccess(res, result, '获取天气信息成功')
   } catch (error: any) {
-    sendError(res, 500, error.message || '获取天气信息失败')
+    sendError(res, error.message || '获取天气信息失败', 500)
   }
 }
