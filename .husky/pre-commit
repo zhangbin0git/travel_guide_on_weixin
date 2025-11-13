@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 运行前端lint检查
+echo "运行前端代码检查..."
+cd frontend
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "前端代码检查失败，请修复后再提交"
+  exit 1
+fi
+
+# 运行后端lint检查
+echo "运行后端代码检查..."
+cd ../backend
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "后端代码检查失败，请修复后再提交"
+  exit 1
+fi
+
+echo "代码检查通过！"

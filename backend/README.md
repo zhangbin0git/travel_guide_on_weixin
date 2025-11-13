@@ -71,8 +71,8 @@ npm start
 ### 认证接口
 
 - `POST /api/auth/login` - 用户登录
-- `GET /api/auth/userinfo` - 获取用户信息
-- `POST /api/auth/update` - 更新用户信息
+- `GET /api/auth/user` - 获取用户信息
+- `PUT /api/auth/user` - 更新用户信息
 - `POST /api/auth/logout` - 用户登出
 
 ### 旅行接口
@@ -98,8 +98,7 @@ npm start
 
 ### 系统接口
 
-- `GET /system/health` - 健康检查
-- `GET /system/info` - API信息
+- `GET /api/health` - 健康检查
 
 ## 开发规范
 

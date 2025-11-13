@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express'
-import { sendError } from '../utils/response'
 
 /**
  * 请求日志中间件

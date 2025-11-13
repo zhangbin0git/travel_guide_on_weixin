@@ -4,11 +4,13 @@ import { User } from '../types'
 // 模拟用户数据，实际项目中应该从数据库获取
 const users: User[] = []
 
+// JWT密钥，实际项目中应该从环境变量获取
+const JWT_SECRET = process.env.JWT_SECRET || 'travel_guide_secret_key'
+
 /**
  * 生成JWT令牌
  */
 const generateToken = (user: User): string => {
-  const jwtSecret = process.env.JWT_SECRET || 'your-secret-key'
   const expiresIn = process.env.JWT_EXPIRES_IN || '7d'
   
   return jwt.sign(
@@ -16,9 +18,10 @@ const generateToken = (user: User): string => {
       id: user.id, 
       openid: user.openid,
       nickname: user.nickname,
-      avatar: user.avatar
+      avatar: user.avatar,
+      gender: user.gender
     },
-    jwtSecret,
+    JWT_SECRET,
     { expiresIn }
   )
 }
@@ -60,7 +63,35 @@ export const authService = {
     // 返回用户信息和令牌
     return {
       token,
-      userInfo: user
+      user
+    }
+  },
+
+  /**
+   * 验证JWT令牌
+   * @param token JWT令牌
+   * @returns 用户信息
+   */
+  verifyToken(token: string): User {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any
+      return {
+        id: decoded.id,
+        openid: decoded.openid,
+        nickname: decoded.nickname,
+        avatar: decoded.avatar,
+        gender: decoded.gender,
+        created_at: decoded.created_at,
+        updated_at: decoded.updated_at
+      }
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new Error('令牌已过期')
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        throw new Error('令牌无效')
+      } else {
+        throw new Error('令牌验证失败')
+      }
     }
   },
 

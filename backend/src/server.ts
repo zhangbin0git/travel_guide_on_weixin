@@ -3,6 +3,7 @@ import app from './app'
 // 启动应用
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`服务器运行在端口 ${process.env.PORT || 3000}`)
+  console.log(`API文档地址: http://localhost:${process.env.PORT || 3000}/api/health`)
 })
 
 // 优雅关闭

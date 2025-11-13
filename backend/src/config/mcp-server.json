@@ -1,0 +1,10 @@
+{
+  "command": "npx",
+  "args": [
+    "-y",
+    "@amap/mcp-server"
+  ],
+  "env": {
+    "AMAP_API_KEY": "${AMAP_API_KEY}"
+  }
+}

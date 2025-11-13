@@ -24,14 +24,14 @@ export const sendSuccess = (
 /**
  * 统一错误响应格式
  * @param res Express响应对象
- * @param code 错误状态码
  * @param message 错误消息
+ * @param code 错误状态码
  * @param data 错误详情
  */
 export const sendError = (
   res: Response,
-  code: number,
   message: string,
+  code: number = 500,
   data: any = null
 ) => {
   res.status(code).json({

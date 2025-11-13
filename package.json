@@ -1,0 +1,33 @@
+{
+  "name": "travel-guide-on-weixin",
+  "version": "1.0.0",
+  "description": "旅行攻略微信小程序项目",
+  "scripts": {
+    "prepare": "husky install",
+    "commit": "git-cz",
+    "lint:all": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:fix:all": "npm run lint:fix:frontend && npm run lint:fix:backend",
+    "lint:fix:frontend": "cd frontend && npm run lint:fix",
+    "lint:fix:backend": "cd backend && npm run lint:fix",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "husky": "^8.0.3"
+  },
+  "keywords": [
+    "travel",
+    "guide",
+    "wechat",
+    "miniprogram",
+    "taro",
+    "nodejs",
+    "express",
+    "typescript"
+  ],
+  "author": "Travel Guide Team",
+  "license": "MIT"
+}
