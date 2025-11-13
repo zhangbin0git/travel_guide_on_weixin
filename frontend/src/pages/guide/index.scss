@@ -1,0 +1,15 @@
+@import '../../../app.scss';
+
+.guide {
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.button-group {
+  margin-top: 20px;
+}
