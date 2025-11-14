@@ -1,0 +1,208 @@
+.search-box {
+  position: relative;
+  width: 100%;
+
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 24px;
+    padding: 12px 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+
+    &:focus-within {
+      background-color: #ffffff;
+      border-color: #007aff;
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    }
+
+    .search-icon {
+      font-size: 16px;
+      color: #666;
+      margin-right: 8px;
+    }
+
+    .search-input {
+      flex: 1;
+      font-size: 16px;
+      color: #333;
+      background-color: transparent;
+      border: none;
+      outline: none;
+
+      &::placeholder {
+        color: #999;
+      }
+    }
+
+    .clear-icon {
+      font-size: 14px;
+      color: #999;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        background-color: #e0e0e0;
+        transform: scale(0.9);
+      }
+    }
+  }
+
+  /* 搜索建议面板 */
+  .suggestions-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    margin-top: 8px;
+    max-height: 300px;
+    overflow: hidden;
+
+    .suggestions-list {
+      max-height: 300px;
+    }
+
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      border-bottom: 1px solid #f5f5f5;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &:active {
+        background-color: #e9ecef;
+      }
+
+      .suggestion-icon {
+        font-size: 14px;
+        color: #666;
+        margin-right: 12px;
+      }
+
+      .suggestion-text {
+        flex: 1;
+        font-size: 14px;
+        color: #333;
+      }
+    }
+  }
+
+  /* 搜索历史面板 */
+  .history-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    margin-top: 8px;
+    max-height: 300px;
+    overflow: hidden;
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f5f5f5;
+
+      .history-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .history-clear {
+        font-size: 14px;
+        color: #007aff;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:active {
+          opacity: 0.6;
+        }
+      }
+    }
+
+    .history-list {
+      max-height: 250px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      border-bottom: 1px solid #f5f5f5;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &:active {
+        background-color: #e9ecef;
+      }
+
+      .history-icon {
+        font-size: 14px;
+        color: #999;
+        margin-right: 12px;
+      }
+
+      .history-text {
+        flex: 1;
+        font-size: 14px;
+        color: #333;
+      }
+    }
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 375px) {
+  .search-box {
+    .search-input-wrapper {
+      padding: 10px 14px;
+
+      .search-input {
+        font-size: 14px;
+      }
+    }
+
+    .suggestions-panel,
+    .history-panel {
+      .suggestion-item,
+      .history-item {
+        padding: 10px 14px;
+      }
+    }
+  }
+}

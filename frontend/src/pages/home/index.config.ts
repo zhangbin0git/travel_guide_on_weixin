@@ -1,3 +1,5 @@
 export default {
-  navigationBarTitleText: '首页',
-}
+  navigationBarTitleText: '旅行攻略',
+  enablePullDownRefresh: true,
+  backgroundTextStyle: 'dark'
+}

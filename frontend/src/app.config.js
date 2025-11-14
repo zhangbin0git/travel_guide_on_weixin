@@ -3,7 +3,16 @@ export default {
     'pages/home/index',
     'pages/search/index',
     'pages/guide/index',
-    'pages/profile/index'
+    'pages/guide-detail/index',
+    'pages/profile/index',
+    // 扩展页面
+    'pages/my-guides/index',
+    'pages/favorites/index',
+    'pages/history/index',
+    'pages/settings/index',
+    'pages/edit-profile/index',
+    'pages/feedback/index',
+    'pages/about/index'
   ],
   window: {
     backgroundTextStyle: 'light',
@@ -12,10 +21,10 @@ export default {
     navigationBarTextStyle: 'black'
   },
   tabBar: {
-    color: '#999',
-    selectedColor: '#ff6b6b',
+    color: '#666',
+    selectedColor: '#1890ff',
     backgroundColor: '#fff',
-    borderStyle: 'black',
+    borderStyle: 'white',
     list: [
       {
         pagePath: 'pages/home/index',

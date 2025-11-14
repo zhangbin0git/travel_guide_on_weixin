@@ -1,43 +1,42 @@
-import { Component } from 'react'
-import { View, Text, Input } from '@tarojs/components'
-import { AtSearchBar } from 'taro-ui'
+import React, { useState, useEffect } from 'react'
+import { View, Text } from '@tarojs/components'
+import { AtSearchBar, AtIcon, AtTabs, AtTabsPane, AtCard, AtButton, AtToast } from 'taro-ui'
+import TopNavBar from '../../components/common/TopNavBar'
+import Card from '../../components/common/Card'
+import Button from '../../components/common/Button'
+import Loading from '../../components/common/Loading'
+import { useRouter } from '../../hooks/useRouter'
 import './index.scss'
 
-export default class Search extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      value: ''
-    }
-  }
+const Search = () => {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+  const [currentTab, setCurrentTab] = useState(0)
+  const [showToast, setShowToast] = useState(false)
+  const [toastText, setToastText] = useState('')
 
-  componentWillMount() {}
+  useEffect(() => {
+    // Component did mount logic here
+  }, [])
 
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
-  onChange(value) {
-    this.setState({ value })
+  const onChange = (value) => {
+    setSearchValue(value)
     console.log('搜索内容:', value)
   }
 
-  render() {
-    return (
-      <View className='search'>
-        <View className='container'>
-          <Text className='title'>搜索目的地</Text>
-          <AtSearchBar
-            value={this.state.value}
-            onChange={this.onChange.bind(this)}
-            placeholder='请输入搜索关键词'
-          />
-        </View>
+  return (
+    <View className='search'>
+      <View className='container'>
+        <Text className='title'>搜索目的地</Text>
+        <AtSearchBar
+          value={searchValue}
+          onChange={onChange}
+          placeholder='请输入搜索关键词'
+        />
       </View>
-    )
-  }
+    </View>
+  )
 }
+
+export default Search

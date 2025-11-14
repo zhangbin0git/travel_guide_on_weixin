@@ -1,0 +1,22 @@
+.favorites {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+
+  .favorites-content {
+    padding: 20px;
+  }
+
+  .favorites-list {
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+
+      .empty-text {
+        display: block;
+        font-size: 16px;
+        color: #999;
+        margin-bottom: 20px;
+      }
+    }
+  }
+}

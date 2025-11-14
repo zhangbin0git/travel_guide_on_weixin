@@ -1,0 +1,130 @@
+.about {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+
+  .about-content {
+    padding: 20px;
+  }
+
+  .app-info {
+    text-align: center;
+    margin-bottom: 20px;
+
+    .app-logo {
+      margin-bottom: 20px;
+
+      .logo-text {
+        font-size: 60px;
+        line-height: 1;
+      }
+    }
+
+    .app-name {
+      display: block;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .app-version {
+      display: block;
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .app-desc {
+      display: block;
+      font-size: 16px;
+      color: #666;
+      line-height: 1.6;
+      text-align: left;
+    }
+  }
+
+  .features {
+    margin-bottom: 20px;
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .feature-icon {
+        font-size: 20px;
+        margin-right: 12px;
+      }
+
+      .feature-text {
+        font-size: 16px;
+        color: #333;
+      }
+    }
+  }
+
+  .tech-support {
+    margin-bottom: 20px;
+
+    .support-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .support-label {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .support-value {
+        font-size: 16px;
+        color: #333;
+      }
+    }
+  }
+
+  .contact {
+    margin-bottom: 30px;
+
+    .contact-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .contact-label {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .contact-value {
+        font-size: 16px;
+        color: #007aff;
+      }
+    }
+  }
+
+  .copyright {
+    text-align: center;
+    padding: 20px 0;
+
+    .copyright-text {
+      font-size: 12px;
+      color: #999;
+    }
+  }
+}

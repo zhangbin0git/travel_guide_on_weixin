@@ -17,7 +17,44 @@ export interface User {
   updateTime: string
 }
 
-// 旅行相关类型
+// 目的地相关类型
+export interface Destination {
+  id: string
+  name: string
+  description: string
+  imageUrl: string
+  rating: number
+  guideCount: number
+  isHot?: boolean
+  tags?: string[]
+  location?: {
+    latitude: number
+    longitude: number
+    address: string
+  }
+  createdAt: string
+  updatedAt: string
+}
+
+// 攻略相关类型
+export interface Guide {
+  id: string
+  title: string
+  content: string
+  coverImage: string
+  summary?: string
+  author: User
+  tags: string[]
+  viewCount: number
+  likeCount: number
+  favoriteCount?: number
+  rating?: number
+  destinations?: Destination[]
+  createdAt: string
+  updatedAt: string
+}
+
+// 旅行相关类型（兼容旧版本）
 export interface TravelDestination {
   id: string
   name: string
@@ -86,4 +123,38 @@ export interface RoutePlan {
     distance: number
     duration: number
   }[]
+}
+
+// 搜索相关类型
+export interface SearchSuggestion {
+  id: string
+  keyword: string
+  type: 'destination' | 'guide' | 'poi'
+  count?: number
+}
+
+export interface SearchHistory {
+  id: string
+  keyword: string
+  searchTime: string
+}
+
+// 分页相关类型
+export interface PaginationParams {
+  page?: number
+  pageSize?: number
+}
+
+export interface PaginationResponse<T> {
+  success: boolean
+  data: T[]
+  total: number
+  message: string
+}
+
+// API响应包装类型
+export interface ApiWrapper<T> {
+  success: boolean
+  data: T
+  message: string
 }

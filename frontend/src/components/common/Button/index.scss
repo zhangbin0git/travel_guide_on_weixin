@@ -1,0 +1,132 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.button-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    
+    &:active {
+      transform: none;
+    }
+  }
+
+  &.button-loading {
+    cursor: wait;
+  }
+
+  /* 按钮类型样式 */
+  &.button-primary {
+    background-color: #ff6b6b;
+    color: #ffffff;
+
+    &:active:not(.button-disabled):not(.button-loading) {
+      background-color: #ff5252;
+    }
+  }
+
+  &.button-secondary {
+    background-color: #f8f9fa;
+    color: #333333;
+
+    &:active:not(.button-disabled):not(.button-loading) {
+      background-color: #e9ecef;
+    }
+  }
+
+  &.button-outline {
+    background-color: transparent;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+
+    &:active:not(.button-disabled):not(.button-loading) {
+      background-color: rgba(255, 107, 107, 0.1);
+    }
+  }
+
+  &.button-text {
+    background-color: transparent;
+    color: #ff6b6b;
+    padding: 0;
+
+    &:active:not(.button-disabled):not(.button-loading) {
+      background-color: rgba(255, 107, 107, 0.1);
+    }
+  }
+
+  /* 按钮尺寸样式 */
+  &.button-small {
+    height: 32px;
+    padding: 0 16px;
+    font-size: 12px;
+  }
+
+  &.button-medium {
+    height: 44px;
+    padding: 0 24px;
+    font-size: 14px;
+  }
+
+  &.button-large {
+    height: 56px;
+    padding: 0 32px;
+    font-size: 16px;
+  }
+
+  /* 块级按钮 */
+  &.button-block {
+    width: 100%;
+    display: flex;
+  }
+
+  /* 圆角按钮 */
+  &.button-rounded {
+    border-radius: 22px;
+  }
+
+  /* 加载动画 */
+  &.button-loading .button-loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+  }
+
+  /* 图标样式 */
+  .button-icon {
+    margin-right: 6px;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  /* 文本样式 */
+  .button-text {
+    line-height: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
