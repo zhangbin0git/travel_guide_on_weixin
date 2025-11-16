@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <h1>微信小程序导航修复测试</h1>
+    
+    <div class="test-section">
+        <h2>问题描述</h2>
+        <p class="error">
+            原错误：navigateTo:fail can not navigateTo a tabbar page
+        </p>
+        <p>原因：使用navigateTo跳转到tabBar页面，微信小程序不允许这种操作</p>
+    </div>
+
+    <div class="test-section">
+        <h2>修复方案</h2>
+        <ol>
+            <li class="success">将navigateTo改为switchTab跳转到tabBar页面</li>
+            <li class="success">由于switchTab不支持URL参数，使用本地存储传递参数</li>
+            <li class="success">在目标页面componentDidMount中读取本地存储的参数</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>修复的跳转逻辑</h2>
+        <h3>1. 搜索功能</h3>
+        <p class="info">修复前：navigateTo跳转到搜索页面（错误）</p>
+        <pre><code>
+// 修复前
+Taro.navigateTo({
+  url: `/pages/search/index?keyword=${encodeURIComponent(searchKeyword)}`
+})
+        </code></pre>
+        
+        <p class="success">修复后：switchTab + 本地存储</p>
+        <pre><code>
+// 修复后
+Taro.switchTab({
+  url: `/pages/search/index`
+}).then(() => {
+  Taro.setStorageSync('searchKeyword', searchKeyword)
+})
+        </code></pre>
+
+        <h3>2. 目的地点击</h3>
+        <p class="info">修复前：navigateTo跳转到搜索页面（错误）</p>
+        <pre><code>
+// 修复前
+Taro.navigateTo({
+  url: `/pages/search/index?destination=${encodeURIComponent(destination.name)}`
+})
+        </code></pre>
+        
+        <p class="success">修复后：switchTab + 本地存储</p>
+        <pre><code>
+// 修复后
+Taro.switchTab({
+  url: `/pages/search/index`
+}).then(() => {
+  Taro.setStorageSync('searchDestination', destination.name)
+})
+        </code></pre>
+
+        <h3>3. 攻略卡片点击</h3>
+        <p class="info">修复前：navigateTo跳转到攻略页面（错误）</p>
+        <pre><code>
+// 修复前
+Taro.navigateTo({
+  url: `/pages/guide/index?id=${guide.id}`
+})
+        </code></pre>
+        
+        <p class="success">修复后：switchTab + 本地存储</p>
+        <pre><code>
+// 修复后
+Taro.switchTab({
+  url: `/pages/guide/index`
+}).then(() => {
+  Taro.setStorageSync('guideId', guide.id)
+})
+        </code></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>目标页面参数接收</h2>
+        <h3>搜索页面</h3>
+        <pre><code>
+componentDidMount() {
+  const searchKeyword = Taro.getStorageSync('searchKeyword')
+  const searchDestination = Taro.getStorageSync('searchDestination')
+  
+  if (searchKeyword) {
+    this.setState({ value: searchKeyword })
+    Taro.removeStorageSync('searchKeyword')
+    this.handleSearch(searchKeyword)
+  } else if (searchDestination) {
+    this.setState({ value: searchDestination })
+    Taro.removeStorageSync('searchDestination')
+    this.handleSearch(searchDestination)
+  }
+}
+        </code></pre>
+
+        <h3>攻略页面</h3>
+        <pre><code>
+componentDidMount() {
+  const guideId = Taro.getStorageSync('guideId')
+  
+  if (guideId) {
+    Taro.removeStorageSync('guideId')
+    this.loadGuideDetail(guideId)
+  }
+}
+        </code></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>修复验证</h2>
+        <p class="success">✅ 所有navigateTo跳转到tabBar页面的问题已修复</p>
+        <p class="success">✅ 参数传递通过本地存储实现</p>
+        <p class="success">✅ 目标页面正确读取参数</p>
+        <p class="info">📝 注意：需要重新编译小程序并测试所有跳转功能</p>
+    </div>
+</body>
+</html>

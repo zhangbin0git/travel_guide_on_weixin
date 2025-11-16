@@ -1,6 +1,7 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import { View, Text, Input } from '@tarojs/components'
 import { AtSearchBar } from 'taro-ui'
+import Taro from '@tarojs/taro'
 import './index.scss'
 
 export default class Search extends Component {
@@ -13,7 +14,25 @@ export default class Search extends Component {
 
   componentWillMount() {}
 
-  componentDidMount() {}
+  componentDidMount() {
+    // 从本地存储获取搜索参数
+    const searchKeyword = Taro.getStorageSync('searchKeyword')
+    const searchDestination = Taro.getStorageSync('searchDestination')
+    
+    if (searchKeyword) {
+      this.setState({ value: searchKeyword })
+      // 清除存储的参数
+      Taro.removeStorageSync('searchKeyword')
+      // 执行搜索
+      this.handleSearch(searchKeyword)
+    } else if (searchDestination) {
+      this.setState({ value: searchDestination })
+      // 清除存储的参数
+      Taro.removeStorageSync('searchDestination')
+      // 执行搜索
+      this.handleSearch(searchDestination)
+    }
+  }
 
   componentWillUnmount() {}
 
@@ -24,6 +43,15 @@ export default class Search extends Component {
   onChange(value) {
     this.setState({ value })
     console.log('搜索内容:', value)
+  }
+
+  /**
+   * 执行搜索
+   */
+  handleSearch = (keyword) => {
+    console.log('执行搜索:', keyword)
+    // 这里可以调用搜索API
+    // TODO: 实现搜索逻辑
   }
 
   render() {

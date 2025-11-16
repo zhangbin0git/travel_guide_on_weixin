@@ -1,6 +1,7 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import { View, Text } from '@tarojs/components'
 import { AtCard, AtButton } from 'taro-ui'
+import Taro from '@tarojs/taro'
 import './index.scss'
 
 export default class Guide extends Component {
@@ -11,13 +12,32 @@ export default class Guide extends Component {
 
   componentWillMount() {}
 
-  componentDidMount() {}
+  componentDidMount() {
+    // 从本地存储获取攻略ID
+    const guideId = Taro.getStorageSync('guideId')
+    
+    if (guideId) {
+      // 清除存储的参数
+      Taro.removeStorageSync('guideId')
+      // 根据攻略ID加载攻略详情
+      this.loadGuideDetail(guideId)
+    }
+  }
 
   componentWillUnmount() {}
 
   componentDidShow() {}
 
   componentDidHide() {}
+
+  /**
+   * 加载攻略详情
+   */
+  loadGuideDetail = (guideId) => {
+    console.log('加载攻略详情:', guideId)
+    // TODO: 实现加载攻略详情的逻辑
+    // 这里可以调用API获取攻略详情数据
+  }
 
   render() {
     return (

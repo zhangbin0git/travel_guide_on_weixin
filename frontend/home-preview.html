@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅行攻略小程序 - 首页预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 76px;
+            z-index: 99;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+
+        .content-area {
+            background: #f8f9fa;
+            min-height: calc(100vh - 156px);
+            padding: 16px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .section-more {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .section-more:hover {
+            color: #667eea;
+        }
+
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 16px 24px 24px;
+        }
+
+        .destination-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            aspect-ratio: 1;
+        }
+
+        .destination-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .destination-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .destination-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            padding: 16px;
+            color: white;
+        }
+
+        .destination-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .destination-count {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .guides-list {
+            padding: 16px 24px 24px;
+        }
+
+        .guide-card {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .guide-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .guide-image {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .guide-content {
+            flex: 1;
+        }
+
+        .guide-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .guide-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .refresh-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .refresh-icon {
+            display: inline-block;
+            animation: rotate 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .demo-note {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px;
+            font-size: 14px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部栏 -->
+        <div class="header">
+            <div class="header-content">
+                <div class="app-title">旅行攻略</div>
+                <div class="header-actions">
+                    <svg class="header-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                    </svg>
+                    <svg class="header-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索区域 -->
+        <div class="search-section">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="搜索目的地、攻略..." />
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <div class="demo-note">
+                <strong>💡 下拉刷新演示</strong><br>
+                在小程序中，向下滑动页面可以触发下拉刷新功能。页面会显示刷新指示器，并重新加载数据。
+            </div>
+
+            <div class="refresh-indicator">
+                <span class="refresh-icon">↻</span>
+                下拉刷新功能已启用
+            </div>
+
+            <!-- 热门目的地 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">热门目的地</div>
+                    <div class="section-more">
+                        查看更多 →
+                    </div>
+                </div>
+                <div class="destinations-grid">
+                    <div class="destination-card">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDMyMCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjQwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4Ij7lvq7ljYc8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iI0NDQyIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5CYWppbmc8L3RleHQ+Cjwvc3ZnPgo=" alt="北京" class="destination-image">
+                        <div class="destination-overlay">
+                            <div class="destination-name">北京</div>
+                            <div class="destination-count">128篇攻略</div>
+                        </div>
+                    </div>
+                    <div class="destination-card">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDMyMCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjQwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4Ij7muIXljYc8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iI0NDQyIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5TaGFuZ2hhaTwvdGV4dD4KPC9zdmc+Cg==" alt="上海" class="destination-image">
+                        <div class="destination-overlay">
+                            <div class="destination-name">上海</div>
+                            <div class="destination-count">96篇攻略</div>
+                        </div>
+                    </div>
+                    <div class="destination-card">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDMyMCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjQwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4Ij7miJDljYc8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iI0NDQyIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5DaGVuZ2R1PC90ZXh0Pgo8L3N2Zz4K" alt="成都" class="destination-image">
+                        <div class="destination-overlay">
+                            <div class="destination-name">成都</div>
+                            <div class="destination-count">84篇攻略</div>
+                        </div>
+                    </div>
+                    <div class="destination-card">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDMyMCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjQwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iMTIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4Ij7njrDljYc8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iI0NDQyIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5YaSdhbjwvdGV4dD4KPC9zdmc+Cg==" alt="西安" class="destination-image">
+                        <div class="destination-overlay">
+                            <div class="destination-name">西安</div>
+                            <div class="destination-count">72篇攻略</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 精选攻略 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">精选攻略</div>
+                    <div class="section-more">
+                        查看更多 →
+                    </div>
+                </div>
+                <div class="guides-list">
+                    <div class="guide-card">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDMyMCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjQwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij7lvq7ljYc8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTI1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0Ij7mnY7lm57mlYU8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iI0NDQyIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5CZWlqaW5nIDMgZGF5cyB0b3VyPC90ZXh0Pgo8L3N2Zz4K" alt="攻略图片" class="guide-image">
+                        <div class="guide-content">
+                            <div class="guide-title">北京3日游攻略：故宫长城深度体验</div>
+                            <div class="guide-meta">
+                                <span>⭐ 4.8分</span>
+                                <span>👤 旅行达人小王</span>
+                                <span>❤️ 1.2k</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide-card">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDMyMCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjQwIiBmaWxsPSIjRjVGNUY1Ii8+Cjx0ZXh0IHg9IjE2MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij7muIXljYc8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTI1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iIzk5OSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0Ij7mnY7lm57mlYU8L3RleHQ+Cjx0ZXh0IHg9IjE2MCIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCIgZmlsbD0iI0NDQyIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIj5TaGFuZ2hhaSAyIGRheXMgdG91cjwvdGV4dD4KPC9zdmc+Cg==" alt="攻略图片" class="guide-image">
+                        <div class="guide-content">
+                            <div class="guide-title">上海都市风情2日游：外滩田子坊漫步</div>
+                            <div class="guide-meta">
+                                <span>⭐ 4.6分</span>
+                                <span>👤 本地向导</span>
+                                <span>❤️ 987</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟下拉刷新效果
+        let isRefreshing = false;
+        let startY = 0;
+        let currentY = 0;
+
+        const contentArea = document.querySelector('.content-area');
+        const refreshIndicator = document.querySelector('.refresh-indicator');
+
+        // 触摸开始
+        contentArea.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0 && !isRefreshing) {
+                startY = e.touches[0].clientY;
+            }
+        });
+
+        // 触摸移动
+        contentArea.addEventListener('touchmove', (e) => {
+            if (window.scrollY === 0 && !isRefreshing && startY > 0) {
+                currentY = e.touches[0].clientY;
+                const pullDistance = currentY - startY;
+                
+                if (pullDistance > 0) {
+                    e.preventDefault();
+                    
+                    if (pullDistance > 80) {
+                        refreshIndicator.innerHTML = '<span class="refresh-icon">↻</span>释放立即刷新';
+                        refreshIndicator.style.color = '#4caf50';
+                    } else {
+                        refreshIndicator.innerHTML = '<span class="refresh-icon">↻</span>下拉刷新功能已启用';
+                        refreshIndicator.style.color = '#667eea';
+                    }
+                    
+                    refreshIndicator.style.transform = `translateY(${Math.min(pullDistance, 120)}px)`;
+                    refreshIndicator.style.opacity = Math.min(pullDistance / 80, 1);
+                }
+            }
+        });
+
+        // 触摸结束
+        contentArea.addEventListener('touchend', (e) => {
+            if (window.scrollY === 0 && !isRefreshing && startY > 0) {
+                const pullDistance = currentY - startY;
+                
+                if (pullDistance > 80) {
+                    // 触发刷新
+                    triggerRefresh();
+                } else {
+                    // 取消刷新
+                    resetRefreshIndicator();
+                }
+                
+                startY = 0;
+                currentY = 0;
+            }
+        });
+
+        function triggerRefresh() {
+            isRefreshing = true;
+            refreshIndicator.innerHTML = '<span class="refresh-icon">↻</span>正在刷新...';
+            refreshIndicator.style.color = '#667eea';
+            refreshIndicator.style.transform = 'translateY(60px)';
+            
+            // 模拟刷新过程
+            setTimeout(() => {
+                refreshIndicator.innerHTML = '<span style="color: #4caf50;">✓</span>刷新成功';
+                refreshIndicator.style.color = '#4caf50';
+                
+                setTimeout(() => {
+                    resetRefreshIndicator();
+                    isRefreshing = false;
+                }, 1000);
+            }, 2000);
+        }
+
+        function resetRefreshIndicator() {
+            refreshIndicator.style.transform = 'translateY(0)';
+            refreshIndicator.style.opacity = '1';
+            refreshIndicator.innerHTML = '<span class="refresh-icon">↻</span>下拉刷新功能已启用';
+            refreshIndicator.style.color = '#667eea';
+        }
+
+        // 添加滚动监听，用于显示/隐藏刷新提示
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                refreshIndicator.style.opacity = '0.3';
+            } else {
+                refreshIndicator.style.opacity = '1';
+            }
+        });
+    </script>
+</body>
+</html>

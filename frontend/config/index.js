@@ -21,10 +21,12 @@ const config = {
     ENABLE_SIZE_APIS: 'true',
     ENABLE_TEMPLATE_CONTENT: 'true',
     ENABLE_CLONE_NODE: 'true',
-    ENABLE_CONTAINS: 'true'
+    ENABLE_CONTAINS: 'true',
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
   },
   copy: {
     patterns: [
+      { from: 'src/assets/images', to: 'assets/images' }
     ],
     options: {
     }

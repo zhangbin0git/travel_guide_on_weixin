@@ -1,33 +1,292 @@
 .home {
-  .container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  
+  // 顶部栏
+  .home-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .app-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .header-icon {
+          cursor: pointer;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+  }
+
+  // 搜索区域
+  .search-section {
+    position: fixed;
+    top: 76px;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 16px 24px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  // 内容滚动区域
+  .content-scroll {
+    margin-top: 156px; // header + search height
+    height: calc(100vh - 156px);
+    background: #f8f9fa;
+  }
+
+  // 加载状态
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0;
+  }
+
+  // 错误状态
+  .error-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 60px 24px;
+
+    .error-message {
+      font-size: 16px;
+      color: #666;
+      margin: 16px 0 24px;
+      text-align: center;
+    }
+
+    .retry-btn {
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      .retry-text {
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+    }
   }
 
-  .title {
-    font-size: 32px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 16px;
-    text-align: center;
+  // 内容区域
+  .section {
+    margin-bottom: 24px;
+    background: white;
+    border-radius: 16px;
+    margin: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #f0f0f0;
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        position: relative;
+        
+        &::before {
+          content: '';
+          position: absolute;
+          left: -8px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 4px;
+          height: 20px;
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          border-radius: 2px;
+        }
+      }
+
+      .section-more {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        color: #999;
+        cursor: pointer;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #667eea;
+        }
+      }
+    }
+
+    // 目的地网格
+    .destinations-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 16px 24px 24px;
+    }
+
+    // 攻略列表
+    .guides-list {
+      padding: 16px 24px 24px;
+    }
   }
 
-  .subtitle {
-    font-size: 16px;
-    color: #ffffff;
-    margin-bottom: 40px;
-    text-align: center;
-    opacity: 0.8;
+  // 底部间距
+  .bottom-spacer {
+    height: 24px;
   }
+}
 
-  .button-group {
-    display: flex;
-    gap: 16px;
-    margin-top: 20px;
+// 响应式设计
+@media (max-width: 375px) {
+  .home {
+    .home-header {
+      padding: 16px 20px 12px;
+
+      .header-content {
+        .app-title {
+          font-size: 18px;
+        }
+
+        .header-actions {
+          gap: 12px;
+        }
+      }
+    }
+
+    .search-section {
+      top: 70px;
+      padding: 12px 20px 16px;
+    }
+
+    .content-scroll {
+      margin-top: 140px;
+      height: calc(100vh - 140px);
+    }
+
+    .section {
+      margin: 12px;
+      border-radius: 12px;
+
+      .section-header {
+        padding: 16px 20px 12px;
+
+        .section-title {
+          font-size: 16px;
+        }
+      }
+
+      .destinations-grid {
+        padding: 12px 20px 20px;
+        gap: 12px;
+      }
+
+      .guides-list {
+        padding: 12px 20px 20px;
+      }
+    }
+  }
+}
+
+// 暗黑模式适配
+@media (prefers-color-scheme: dark) {
+  .home {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+
+    .home-header {
+      background: rgba(26, 32, 44, 0.95);
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+
+      .header-content {
+        .app-title {
+          color: white;
+        }
+
+        .header-actions {
+          .header-icon {
+            color: white;
+          }
+        }
+      }
+    }
+
+    .search-section {
+      background: rgba(26, 32, 44, 0.95);
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .content-scroll {
+      background: #1a202c;
+    }
+
+    .section {
+      background: #2d3748;
+      border-color: rgba(255, 255, 255, 0.1);
+
+      .section-header {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+
+        .section-title {
+          color: white;
+        }
+
+        .section-more {
+          color: #a0aec0;
+
+          &:hover {
+            color: #667eea;
+          }
+        }
+      }
+    }
+
+    .error-container {
+      .error-message {
+        color: #a0aec0;
+      }
+    }
   }
 }
